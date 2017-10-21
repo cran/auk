@@ -6,25 +6,24 @@
 \alias{auk_zerofill.character}
 \alias{auk_zerofill.auk_ebd}
 \alias{collapse_zerofill}
-\title{Read and zero-fill an EBD file}
+\title{Read and zero-fill an eBird data file}
 \usage{
 auk_zerofill(x, ...)
 
 \method{auk_zerofill}{data.frame}(x, sampling_events, species, unique = TRUE,
-  collapse = FALSE, setclass = c("tbl", "data.frame", "data.table"), ...)
+  collapse = FALSE, ...)
 
 \method{auk_zerofill}{character}(x, sampling_events, species, sep = "\\t",
-  unique = TRUE, collapse = FALSE, setclass = c("tbl", "data.frame",
-  "data.table"), ...)
+  unique = TRUE, collapse = FALSE, ...)
 
 \method{auk_zerofill}{auk_ebd}(x, species, sep = "\\t", unique = TRUE,
-  collapse = FALSE, setclass = c("tbl", "data.frame", "data.table"), ...)
+  collapse = FALSE, ...)
 
-collapse_zerofill(x, setclass = c("tbl", "data.frame", "data.table"))
+collapse_zerofill(x)
 }
 \arguments{
-\item{x}{filename, \code{data.frame} of EBD observations, or \code{auk_ebd} object with
-associated output files as created by \code{\link[=auk_filter]{auk_filter()}}. If a filename is
+\item{x}{filename, \code{data.frame} of eBird observations, or \code{auk_ebd} object
+with associated output files as created by \code{\link[=auk_filter]{auk_filter()}}. If a filename is
 provided, it must point to the EBD and the \code{sampling_events} argument must
 point to the sampling event data file. If a \code{data.frame} is provided it
 should have been imported with \code{\link[=read_ebd]{read_ebd()}}, to ensure the variables names
@@ -49,14 +48,8 @@ species, don't pass anything to this argument.}
 hasn't already. The check that \code{\link[=auk_unique]{auk_unique()}} has been run is simplistic:
 is there a \code{checklist_id} field or not.}
 
-\item{collapse}{logical; whether to call \code{zerofill_collapse()} to return a
+\item{collapse}{logical; whether to call \code{collapse_zerofill()} to return a
 data frame rather than an \code{auk_zerofill} object.}
-
-\item{setclass}{\code{tbl}, \code{data.frame}, or \code{data.table}; optionally set
-additional classes to set on the output data. All return objects are
-data frames, but may additionally be \code{tbl} (for use with \code{dplyr}
-and the tidyverse) or \code{data.table} (for use with \code{data.table}). The default
-is to return a tibble.}
 
 \item{sep}{character; single character used to separate fields within a row.}
 }
@@ -64,7 +57,7 @@ is to return a tibble.}
 By default, an \code{auk_zerofill} object, or a data frame if \code{collapse = TRUE}.
 }
 \description{
-Read an eBird Basic Dataset file, and associated sampling event data file, to
+Read an eBird Basic Dataset (EBD) file, and associated sampling event data file, to
 produce a zero-filled, presence-absence dataset. The EBD contains bird
 sightings and the sampling event data is a set of all checklists, they can be
 combined to infer absence data by assuming any species not reported on a

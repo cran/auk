@@ -2,12 +2,12 @@
 % Please edit documentation in R/auk-duration.r
 \name{auk_duration}
 \alias{auk_duration}
-\title{Filter the EBD by duration}
+\title{Filter the eBird data by duration}
 \usage{
 auk_duration(x, duration)
 }
 \arguments{
-\item{x}{\code{auk_ebd} object; reference to EBD file created by \code{\link[=auk_ebd]{auk_ebd()}}.}
+\item{x}{\code{auk_ebd} object; reference to object created by \code{\link[=auk_ebd]{auk_ebd()}}.}
 
 \item{duration}{integer; 2 element vector specifying the range of durations
 in minutes to filter by.}
@@ -19,11 +19,17 @@ An \code{auk_ebd} object.
 Define a filter for the eBird Basic Dataset (EBD) based on the duration of
 the checklist. This function only defines the filter and, once all filters
 have been defined, \code{\link[=auk_filter]{auk_filter()}} should be used to call AWK and perform the
-filtering.
+filtering. Note that checklists with no effort, such as incidental
+observations, will be excluded if this filter is used since they have no
+associated duration information.
 }
 \examples{
 # only keep checklists that are less than an hour long
 system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_ebd() \%>\%
   auk_duration(duration = c(0, 60))
+  
+# alternatively, without pipes
+ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+auk_duration(ebd, duration = c(0, 60))
 }

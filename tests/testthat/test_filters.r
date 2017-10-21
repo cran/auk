@@ -167,6 +167,45 @@ test_that("auk_last_edited", {
 
 })
 
+test_that("auk_protocol", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd() %>% 
+    auk_protocol("stationary")
+  
+  # works correctly
+  expect_equal(ebd$filters$protocol, "stationary")
+  
+  # multiple protocols
+  ebd <- auk_protocol(ebd, c("stationary", "traveling"))
+  expect_equal(ebd$filters$protocol, c("stationary", "traveling"))
+  
+  # raises error for bad input
+  expect_error(auk_protocol(ebd, "STATIONARY"))
+  expect_error(auk_protocol(ebd, 2))
+  expect_error(auk_protocol(ebd, ""))
+  expect_error(auk_protocol(ebd, NA))
+})
+
+test_that("auk_project", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd() %>% 
+    auk_project("EBIRD")
+  
+  # works correctly
+  expect_equal(ebd$filters$project, "EBIRD")
+  
+  # multiple projects
+  ebd <- auk_project(ebd, c("EBIRD", "EBIRD_MEX"))
+  expect_equal(ebd$filters$project, c("EBIRD", "EBIRD_MEX"))
+  
+  # raises error for bad input
+  expect_error(auk_project(ebd, "EBIRD MEX"))
+  expect_error(auk_project(ebd, "ebird_mex"))
+  expect_error(auk_project(ebd, 2))
+  expect_error(auk_project(ebd, ""))
+  expect_error(auk_project(ebd, NA))
+})
+
 test_that("auk_time", {
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd()
@@ -218,10 +257,51 @@ test_that("auk_duration", {
   expect_error(auk_duration(ebd, c(60, 30)))
 })
 
+test_that("auk_distance", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd()
+  
+  # works correctly
+  d <- c(0, 10)
+  ebd <- auk_distance(ebd, d)
+  expect_equal(ebd$filters$distance, d)
+  
+  # overwrite
+  d <- c(5, 10)
+  ebd <- auk_distance(ebd, d)
+  expect_equal(ebd$filters$distance, d)
+  
+  # miles conversion
+  d <- c(5, 10)
+  ebd_km <- auk_distance(ebd, d)
+  ebd_miles <- auk_distance(ebd, 0.621371 * d, distance_units = "miles")
+  expect_equal(round(ebd_km$filters$distance, 1), 
+               round(ebd_miles$filters$distance, 1))
+  
+  # invalid distance format
+  expect_error(auk_distance(ebd, c("0", "10")))
+  expect_error(auk_distance(ebd, 0))
+  expect_error(auk_distance(ebd, c(0, 5, 10)))
+  expect_error(auk_distance(ebd, c(-10, 10)))
+  
+  # distances not sequential
+  expect_error(auk_distance(ebd, c(10, 5)))
+})
+
 test_that("auk_complete", {
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd()
 
+  # works correctly
+  expect_equal(ebd$filters$complete, FALSE)
+  ebd <- auk_complete(ebd)
+  expect_equal(ebd$filters$complete, TRUE)
+})
+
+test_that("auk_breeding", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd()
+  
   # works correctly
   expect_equal(ebd$filters$complete, FALSE)
   ebd <- auk_complete(ebd)

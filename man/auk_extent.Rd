@@ -2,15 +2,15 @@
 % Please edit documentation in R/auk-extent.r
 \name{auk_extent}
 \alias{auk_extent}
-\title{Filter the EBD by spatial extent}
+\title{Filter the eBird data by spatial extent}
 \usage{
 auk_extent(x, extent)
 }
 \arguments{
-\item{x}{\code{auk_ebd} object; reference to EBD file created by \code{\link[=auk_ebd]{auk_ebd()}}.}
+\item{x}{\code{auk_ebd} object; reference to object created by \code{\link[=auk_ebd]{auk_ebd()}}.}
 
 \item{extent}{numeric; spatial extent expressed as the range of latitudes
-and longitudes: \code{c(lng_min, lat_min, lng_max, lat_max)}.}
+and longitudes in decimal degrees: \code{c(lng_min, lat_min, lng_max, lat_max)}.}
 }
 \value{
 An \code{auk_ebd} object.
@@ -26,4 +26,8 @@ filtering.
 system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_ebd() \%>\%
   auk_extent(extent = c(-125, 37, -120, 52))
+  
+# alternatively, without pipes
+ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+auk_extent(ebd, extent = c(-125, 37, -120, 52))
 }

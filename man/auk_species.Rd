@@ -2,12 +2,12 @@
 % Please edit documentation in R/auk-species.r
 \name{auk_species}
 \alias{auk_species}
-\title{Filter the EBD by species}
+\title{Filter the eBird data by species}
 \usage{
 auk_species(x, species, replace)
 }
 \arguments{
-\item{x}{\code{auk_ebd} object; reference to EBD file created by \code{\link[=auk_ebd]{auk_ebd()}}.}
+\item{x}{\code{auk_ebd} object; reference to object created by \code{\link[=auk_ebd]{auk_ebd()}}.}
 
 \item{species}{character; species to filter by, provided as scientific or
 English common names, or a mixture of both. These names must match the
@@ -31,4 +31,8 @@ species <- c("Gray Jay", "Pluvialis squatarola")
 system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_ebd() \%>\%
   auk_species(species)
+  
+# alternatively, without pipes
+ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+auk_species(ebd, species)
 }

@@ -1,13 +1,13 @@
-#' Filter the EBD by spatial extent
+#' Filter the eBird data by spatial extent
 #'
 #' Define a filter for the eBird Basic Dataset (EBD) based on spatial extent.
 #' This function only defines the filter and, once all filters have been
 #' defined, [auk_filter()] should be used to call AWK and perform the
 #' filtering.
 #'
-#' @param x `auk_ebd` object; reference to EBD file created by [auk_ebd()].
+#' @param x `auk_ebd` object; reference to object created by [auk_ebd()].
 #' @param extent numeric; spatial extent expressed as the range of latitudes
-#'   and longitudes: `c(lng_min, lat_min, lng_max, lat_max)`.
+#'   and longitudes in decimal degrees: `c(lng_min, lat_min, lng_max, lat_max)`.
 #'
 #' @return An `auk_ebd` object.
 #' @export
@@ -16,6 +16,10 @@
 #' system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #'   auk_ebd() %>%
 #'   auk_extent(extent = c(-125, 37, -120, 52))
+#'   
+#' # alternatively, without pipes
+#' ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+#' auk_extent(ebd, extent = c(-125, 37, -120, 52))
 auk_extent <- function(x, extent)  {
   UseMethod("auk_extent")
 }

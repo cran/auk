@@ -32,7 +32,7 @@ argument is \code{TRUE}, then the \code{species_id} argument is ignored and remo
 of duplicated is done at the checklist level not the species level.}
 }
 \value{
-A data.frame with unique observations, and an additional field,
+A data frame with unique observations, and an additional field,
 \code{checklist_id}, which is a combination of the sampling event and group IDs.
 }
 \description{
@@ -52,8 +52,8 @@ the field specified by the \code{group_id} parameter for grouped checklists.
 }
 \examples{
 # read in an ebd file and don't automatically remove duplicates
-ebd <- system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
-  read_ebd(unique = FALSE)
+f <- system.file("extdata/ebd-sample.txt", package = "auk")
+ebd <- read_ebd(f, unique = FALSE)
 # remove duplicates
 ebd_unique <- auk_unique(ebd)
 nrow(ebd)

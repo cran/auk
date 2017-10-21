@@ -2,14 +2,14 @@
 % Please edit documentation in R/auk-date.r
 \name{auk_date}
 \alias{auk_date}
-\title{Filter the EBD by date}
+\title{Filter the eBird data by date}
 \usage{
 auk_date(x, date)
 }
 \arguments{
-\item{x}{\code{auk_ebd} object; reference to EBD file created by \code{\link[=auk_ebd]{auk_ebd()}}.}
+\item{x}{\code{auk_ebd} object; reference to object created by \code{\link[=auk_ebd]{auk_ebd()}}.}
 
-\item{date}{character or date; date range to filter by , provided either as a
+\item{date}{character or date; date range to filter by, provided either as a
 character vector in the format \code{"2015-12-31"} or a vector of Date objects.}
 }
 \value{
@@ -25,4 +25,8 @@ filtering.
 system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_ebd() \%>\%
   auk_date(date = c("2010-01-01", "2010-12-31"))
+  
+# alternatively, without pipes
+ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+auk_date(ebd, date = c("2010-01-01", "2010-12-31"))
 }

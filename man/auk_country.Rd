@@ -2,7 +2,7 @@
 % Please edit documentation in R/auk-country.r
 \name{auk_country}
 \alias{auk_country}
-\title{Filter the EBD by country}
+\title{Filter the eBird data by country}
 \usage{
 auk_country(x, country, replace)
 }
@@ -35,4 +35,8 @@ country <- c("CA", "United States", "mexico")
 system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_ebd() \%>\%
   auk_country(country)
+  
+# alternatively, without pipes
+ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
+auk_country(ebd, country)
 }

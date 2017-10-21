@@ -17,10 +17,10 @@ get_col_types <- function(header,
   reader <- match.arg(reader)
 
   # column types based on feb 2017 ebd
-  col_types = c(
+  col_types <- c(
     "GLOBAL UNIQUE IDENTIFIER" = "character",
     "LAST EDITED DATE" = "character",
-    "TAXONOMIC ORDER" = "integer",
+    "TAXONOMIC ORDER" = "numeric",
     "CATEGORY" = "character",
     "COMMON NAME" = "character",
     "SCIENTIFIC NAME" = "character",
@@ -28,6 +28,7 @@ get_col_types <- function(header,
     "SUBSPECIES SCIENTIFIC NAME" = "character",
     "OBSERVATION COUNT" = "character",
     "BREEDING BIRD ATLAS CODE" = "character",
+    "BREEDING BIRD ATLAS CATEGORY" = "character",
     "AGE/SEX" = "character",
     "COUNTRY" = "character",
     "COUNTRY CODE" = "character",
@@ -70,42 +71,19 @@ get_col_types <- function(header,
 
   # make reader specific changes
   if (reader == "fread") {
-    col_types[col_types == "logical"] = "integer"
-    col_types[col_types == "Date"] = "character"
+    col_types[col_types == "logical"] <- "integer"
+    col_types[col_types == "Date"] <- "character"
   } else if (reader == "readr") {
-    col_types = substr(col_types, 1, 1)
+    col_types <- substr(col_types, 1, 1)
     # add in guesses
     col_types <- col_types[header]
     col_types[is.na(col_types)] <- "?"
     col_types <- paste(col_types, collapse = "")
   } else {
-    col_types[col_types == "logical"] = "integer"
+    col_types[col_types == "logical"] <- "integer"
     names(col_types) <- stringr::str_replace_all(names(col_types), "[ /]", ".")
   }
   col_types
-}
-
-# set output format
-set_class <- function(x, setclass = c("tbl", "data.frame", "data.table")) {
-  setclass = match.arg(setclass)
-  if (setclass == "data.table" &&
-      !requireNamespace("data.table", quietly = TRUE)) {
-    stop("data.table package must be installed to return a data.table.")
-  }
-
-  if (setclass == "tbl") {
-    if (inherits(x, "tbl")) {
-      return(x)
-    }
-    return(structure(x, class = c("tbl_df", "tbl", "data.frame")))
-  } else if (setclass == "data.table") {
-    if (inherits(x, "data.table")) {
-      return(x)
-    }
-    return(data.table::as.data.table(x))
-  } else {
-    return(structure(x, class = "data.frame"))
-  }
 }
 
 choose_reader <- function(x) {
@@ -114,7 +92,7 @@ choose_reader <- function(x) {
   if (is.null(x)) {
     if (requireNamespace("data.table", quietly = TRUE)) {
       reader <- "fread"
-    } else if (requireNamespace("data.table", quietly = TRUE)) {
+    } else if (requireNamespace("readr", quietly = TRUE)) {
       reader <- "readr"
     } else {
       reader <- "base"

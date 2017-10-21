@@ -11,7 +11,7 @@ test_that("auk_filter filter an ebd", {
     auk_country(country = c("US", "Canada")) %>%
     auk_extent(extent = c(-100, 37, -80, 52)) %>%
     auk_date(date = c("2012-01-01", "2012-12-31")) %>%
-    auk_time(time = c("06:00", "09:00")) %>%
+    auk_time(start_time = c("06:00", "09:00")) %>%
     auk_duration(duration = c(0, 60)) %>%
     auk_complete()
   # run filters
@@ -28,11 +28,36 @@ test_that("auk_filter filter an ebd", {
 
   expect_is(ebd, "data.frame")
   expect_lt(nrow(ebd), nrow(read_ebd(f)))
+  expect_equal(nrow(ebd), 12)
   expect_true(all(ebd$scientific_name %in% filters$filters$species))
   expect_true(all(ebd$country_code %in% filters$filters$country))
   expect_true(all(ebd$all_species_reported))
   expect_true(all(ebd$time_observations_started >= filters$filters$time[1]))
   expect_true(all(ebd$time_observations_started <= filters$filters$time[2]))
+  expect_true(all(ebd$longitude >= filters$filters$extent[1]))
+  expect_true(all(ebd$longitude <= filters$filters$extent[3]))
+  expect_true(all(ebd$latitude >= filters$filters$extent[2]))
+  expect_true(all(ebd$latitude <= filters$filters$extent[4]))
+  
+  # filter again
+  tmp <- tempfile()
+  ebd <- auk_ebd(f) %>%
+    auk_project("EBIRD_CAN") %>% 
+    auk_protocol("stationary") %>% 
+    auk_filter(file = tmp) %>% 
+    read_ebd()
+  unlink(tmp)
+  
+  expect_true(all(ebd$project_code == "EBIRD_CAN"))
+  expect_true(all(ebd$protocol_type == "eBird - Stationary Count"))
+  
+  # again
+  ebd <- system.file("extdata/zerofill-ex_ebd.txt", package = "auk") %>% 
+    auk_ebd() %>%
+    auk_breeding() %>% 
+    auk_filter(file = tmp) %>% 
+    read_ebd()
+  expect_true(all(!is.na(ebd$breeding_bird_atlas_code)))
 })
 
 test_that("auk_filter filter sampling and ebd files", {
@@ -44,7 +69,7 @@ test_that("auk_filter filter sampling and ebd files", {
   f_smp <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
   filters <- auk_ebd(f, f_smp) %>%
     auk_species(species = "Collared Kingfisher") %>%
-    auk_time(time = c("06:00", "09:00")) %>%
+    auk_time(start_time = c("06:00", "09:00")) %>%
     auk_duration(duration = c(0, 60)) %>%
     auk_complete()
   # run filters

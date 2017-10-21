@@ -1,8 +1,10 @@
-#' `auk`: eBird Data Processing with AWK
+#' `auk`: eBird Data Extraction and Processing with AWK
 #'
-#' Use the command line utility AWK to process eBird data.
+#' Tools for extracting and processing eBird data from the eBird Basic Dataset 
+#' (EBD).
 #'
 #' @name auk
 #' @docType package
 #' @importFrom stringr str_interp
+#' @importFrom rlang .data
 NULL
