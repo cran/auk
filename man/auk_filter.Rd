@@ -2,29 +2,39 @@
 % Please edit documentation in R/auk-filter.r
 \name{auk_filter}
 \alias{auk_filter}
+\alias{auk_filter.auk_ebd}
+\alias{auk_filter.auk_sampling}
 \title{Filter the eBird file using AWK}
 \usage{
-auk_filter(x, file, file_sampling, awk_file, keep, drop, sep, filter_sampling,
-  execute, overwrite)
+auk_filter(x, file, ...)
+
+\method{auk_filter}{auk_ebd}(x, file, file_sampling, keep, drop, awk_file,
+  sep = "\\t", filter_sampling = TRUE, execute = TRUE,
+  overwrite = FALSE, ...)
+
+\method{auk_filter}{auk_sampling}(x, file, keep, drop, awk_file, sep = "\\t",
+  execute = TRUE, overwrite = FALSE, ...)
 }
 \arguments{
-\item{x}{\code{auk_ebd} object; reference to object created by \code{\link[=auk_ebd]{auk_ebd()}} with
-filters defined.}
+\item{x}{\code{auk_ebd} or \code{auk_sampling} object; reference to file created by
+\code{\link[=auk_ebd]{auk_ebd()}} or \code{\link[=auk_sampling]{auk_sampling()}}.}
 
 \item{file}{character; output file.}
 
-\item{file_sampling}{character; optional output file for sampling data.}
+\item{...}{arguments passed on to methods.}
 
-\item{awk_file}{character; output file to optionally save the awk script to.}
+\item{file_sampling}{character; optional output file for sampling data.}
 
 \item{keep}{character; a character vector specifying the names of the columns
 to keep in the output file. Columns should be as they appear in the header
-of the EBD, however, names are not case sensitive and spaces may be
+of the EBD; however, names are not case sensitive and spaces may be
 replaced by underscores, e.g. \code{"COMMON NAME"}, \code{"common name"}, and
 \code{"common_NAME"} are all valid.}
 
 \item{drop}{character; a character vector of columns to drop in the same
 format as \code{keep}. Ignored if \code{keep} is supplied.}
+
+\item{awk_file}{character; output file to optionally save the awk script to.}
 
 \item{sep}{character; the input field separator, the eBird file is tab
 separated by default. Must only be a single character and space delimited
@@ -67,10 +77,19 @@ Calling this function requires that the command line utility AWK is
 installed. Linux and Mac machines should have AWK by default, Windows users
 will likely need to install \href{https://www.cygwin.com}{Cygwin}.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{auk_ebd}: \code{auk_ebd} object
+
+\item \code{auk_sampling}: \code{auk_sampling} object
+}}
+
 \examples{
+# get the path to the example data included in the package
+# in practice, provide path to ebd, e.g. f <- "data/ebd_relFeb-2018.txt"
+f <- system.file("extdata/ebd-sample.txt", package = "auk")
 # define filters
-filters <- system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
-  auk_ebd() \%>\%
+filters <- auk_ebd(f) \%>\%
   auk_species(species = c("Gray Jay", "Blue Jay")) \%>\%
   auk_country(country = c("US", "Canada")) \%>\%
   auk_extent(extent = c(-100, 37, -80, 52)) \%>\%
@@ -91,9 +110,11 @@ filters <- auk_complete(filters)
 
 # apply filters
 \dontrun{
-# temp output file
-out_file <- tempfile()
-filtered <- auk_filter(filters, file = out_file)
+# output to a temp file for example
+# in practice, provide path to output file
+# e.g. f_out <- "output/ebd_filtered.txt"
+f_out <- tempfile()
+filtered <- auk_filter(filters, file = f_out)
 str(read_ebd(filtered))
 }
 }

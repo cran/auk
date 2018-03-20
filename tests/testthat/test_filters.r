@@ -32,21 +32,21 @@ test_that("auk_species", {
 })
 
 test_that("auk_country", {
-  country <- c("CA", "United States", "mexico")
+  country <- c("CA", "United States", "mexico", "kosovo", "AC")
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd() %>%
     auk_country(country)
 
   # works correctly
-  expect_equal(ebd$filters$country, c("CA", "MX", "US"))
+  expect_equal(ebd$filters$country, c("AC", "CA", "MX", "US", "XK"))
 
   # add
   ebd <- auk_country(ebd, "Belize")
-  expect_equal(ebd$filters$country, c("BZ", "CA", "MX", "US"))
+  expect_equal(ebd$filters$country, c("AC", "BZ", "CA", "MX", "US", "XK"))
 
   # no duplication
   ebd <- auk_country(ebd, rep(country, 2), replace = TRUE)
-  expect_equal(ebd$filters$country, c("CA", "MX", "US"))
+  expect_equal(ebd$filters$country, c("AC", "CA", "MX", "US", "XK"))
 
   # overwrite
   ebd <- auk_country(ebd, "Belize", replace = TRUE)
@@ -65,9 +65,54 @@ test_that("auk_country", {
 
   # raises error for bad countries
   expect_error(auk_country(ebd, "Atlantis"))
-  expect_error(auk_country(ebd, "XX"))
+  expect_error(auk_country(ebd, "AA"))
   expect_error(auk_country(ebd, ""))
   expect_error(auk_country(ebd, NA))
+})
+
+test_that("auk_state", {
+  state <- c("CR-P", "US-TX")
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd() %>%
+    auk_state(state)
+  
+  # works correctly
+  expect_equal(ebd$filters$state, state)
+  
+  # add
+  ebd <- auk_state(ebd, "CA-BC")
+  expect_equal(ebd$filters$state, c("CA-BC", "CR-P", "US-TX"))
+  
+  # no duplication
+  ebd <- auk_state(ebd, rep(state, 2))
+  expect_equal(ebd$filters$state, c("CA-BC", "CR-P", "US-TX"))
+  
+  # overwrite
+  ebd <- auk_state(ebd, "CA-BC", replace = TRUE)
+  expect_equal(ebd$filters$state, "CA-BC")
+  
+  # raises error for bad states
+  expect_error(auk_state(ebd, "US-XX"))
+  expect_error(auk_state(ebd, "AA-AA"))
+  expect_error(auk_state(ebd, ""))
+  expect_error(auk_state(ebd, NA))
+})
+
+test_that("auk_state/country mutually exclusive", {
+  state <- c("CR-P", "US-TX")
+  country <- c("Costa Rica", "US")
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd() %>%
+    auk_state(state)
+  
+  expect_length(ebd$filters$country, 0)
+  expect_length(ebd$filters$state, 2)
+  ebd <- auk_country(ebd, country)
+  expect_length(ebd$filters$country, 2)
+  expect_length(ebd$filters$state, 0)
+  ebd <- auk_state(ebd, state)
+  expect_length(ebd$filters$country, 0)
+  expect_length(ebd$filters$state, 2)
 })
 
 test_that("auk_extent", {
@@ -103,20 +148,21 @@ test_that("auk_date", {
   # character input
   d <- c("2015-01-01", "2015-12-31")
   ebd <- auk_date(ebd, d)
-  expect_equal(ebd$filters$date, d)
+  expect_equivalent(ebd$filters$date, d)
+  expect_true(!attr(ebd$filters$date, "wildcard"))
   # date input
   ebd <- auk_date(ebd, as.Date(d))
-  expect_equal(ebd$filters$date, d)
+  expect_equivalent(ebd$filters$date, d)
 
   # single day is ok
   d <- c("2015-01-01", "2015-01-01")
   ebd <- auk_date(ebd, d)
-  expect_equal(ebd$filters$date, d)
+  expect_equivalent(ebd$filters$date, d)
 
   # overwrite
   d <- c("2010-01-01", "2010-12-31")
   ebd <- auk_date(ebd, d)
-  expect_equal(ebd$filters$date, d)
+  expect_equivalent(ebd$filters$date, d)
 
   # invalid date format
   expect_error(auk_date(ebd, c("01-01-2015", "2015-12-31")))
@@ -127,7 +173,23 @@ test_that("auk_date", {
 
   # dates not sequential
   expect_error(auk_date(ebd, c("2015-12-31", "2015-01-01")))
+})
 
+test_that("auk_date wildcards", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd()
+  
+  d <- c("*-05-01", "*-06-30")
+  ebd <- auk_date(ebd, d)
+  expect_equivalent(ebd$filters$date, d)
+  expect_true(attr(ebd$filters$date, "wildcard"))
+  
+  # invalid date format
+  expect_error(auk_date(ebd, "*-01-01"))
+  expect_error(auk_date(ebd, c("*-05-01", "2012-06-30")))
+  
+  # dates not sequential
+  expect_error(auk_date(ebd, c("*-12-31", "*-01-01")))
 })
 
 test_that("auk_last_edited", {
@@ -170,14 +232,14 @@ test_that("auk_last_edited", {
 test_that("auk_protocol", {
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd() %>% 
-    auk_protocol("stationary")
+    auk_protocol("Stationary")
   
   # works correctly
-  expect_equal(ebd$filters$protocol, "stationary")
+  expect_equal(ebd$filters$protocol, "Stationary")
   
   # multiple protocols
-  ebd <- auk_protocol(ebd, c("stationary", "traveling"))
-  expect_equal(ebd$filters$protocol, c("stationary", "traveling"))
+  ebd <- auk_protocol(ebd, c("Stationary", "Traveling"))
+  expect_equal(ebd$filters$protocol, c("Stationary", "Traveling"))
   
   # raises error for bad input
   expect_error(auk_protocol(ebd, "STATIONARY"))

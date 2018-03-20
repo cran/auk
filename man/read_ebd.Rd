@@ -7,9 +7,10 @@
 \alias{read_sampling}
 \alias{read_sampling.character}
 \alias{read_sampling.auk_ebd}
+\alias{read_sampling.auk_sampling}
 \title{Read an EBD file}
 \usage{
-read_ebd(x, reader, sep, unique, rollup)
+read_ebd(x, reader, sep = "\\t", unique = TRUE, rollup = TRUE)
 
 \method{read_ebd}{character}(x, reader, sep = "\\t", unique = TRUE,
   rollup = TRUE)
@@ -17,11 +18,13 @@ read_ebd(x, reader, sep, unique, rollup)
 \method{read_ebd}{auk_ebd}(x, reader, sep = "\\t", unique = TRUE,
   rollup = TRUE)
 
-read_sampling(x, reader, sep, unique)
+read_sampling(x, reader, sep = "\\t", unique = TRUE)
 
 \method{read_sampling}{character}(x, reader, sep = "\\t", unique = TRUE)
 
 \method{read_sampling}{auk_ebd}(x, reader, sep = "\\t", unique = TRUE)
+
+\method{read_sampling}{auk_sampling}(x, reader, sep = "\\t", unique = TRUE)
 }
 \arguments{
 \item{x}{filename or \code{auk_ebd} object with associated output
@@ -29,7 +32,7 @@ files as created by \code{\link[=auk_filter]{auk_filter()}}.}
 
 \item{reader}{character; the function to use for reading the input file,
 options are \code{"fread"}, \code{"readr"}, or \code{"base"}, for \code{\link[data.table:fread]{data.table::fread()}},
-\code{\link[readr:read_delim]{readr::read_delim()}}, or \link{read.delim}, respectively. This argument should
+\code{\link[readr:read_delim]{readr::read_delim()}}, or \code{\link[=read.delim]{read.delim()}}, respectively. This argument should
 typically be left empty to have the function choose the best reader based
 on the installed packages.}
 
@@ -39,7 +42,9 @@ on the installed packages.}
 \code{unique = TRUE}, \code{\link[=auk_unique]{auk_unique()}} is called on the EBD before returning.}
 
 \item{rollup}{logical; should taxonomic rollup to species level be applied.
-If \code{rollup = TRUE}, \code{\link[=auk_rollup]{auk_rollup()}} is called on the EBD before returning.}
+If \code{rollup = TRUE}, \code{\link[=auk_rollup]{auk_rollup()}} is called on the EBD before returning.
+Note that this process can be time consuming for large files, try turning
+rollup off if reading is taking too long.}
 }
 \value{
 A data frame of EBD observations. An additional column,
@@ -50,7 +55,7 @@ equal to \code{sampling_event_identifier} for non-group checklists, and
 }
 \description{
 Read an eBird Basic Dataset file using \code{\link[data.table:fread]{data.table::fread()}},
-\code{\link[readr:read_delim]{readr::read_delim()}}, or \link{read.delim} depending on which packages are
+\code{\link[readr:read_delim]{readr::read_delim()}}, or \code{\link[=read.delim]{read.delim()}} depending on which packages are
 installed. \code{read_ebd()} reads the EBD itself, while read_sampling()` reads a
 sampling event data file.
 }
@@ -76,6 +81,8 @@ function used.
 
 \item \code{auk_ebd}: \code{auk_ebd} object output from \code{\link[=auk_filter]{auk_filter()}}. Must have
 had a sampling event data file set in the original call to \code{\link[=auk_ebd]{auk_ebd()}}.
+
+\item \code{auk_sampling}: \code{auk_sampling} object output from \code{\link[=auk_filter]{auk_filter()}}.
 }}
 
 \examples{

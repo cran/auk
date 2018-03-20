@@ -1,7 +1,7 @@
 #' Read an EBD file
 #'
 #' Read an eBird Basic Dataset file using [data.table::fread()],
-#' [readr::read_delim()], or [read.delim] depending on which packages are
+#' [readr::read_delim()], or [read.delim()] depending on which packages are
 #' installed. `read_ebd()` reads the EBD itself, while read_sampling()` reads a
 #' sampling event data file.
 #'
@@ -9,14 +9,16 @@
 #'   files as created by [auk_filter()].
 #' @param reader character; the function to use for reading the input file,
 #'   options are `"fread"`, `"readr"`, or `"base"`, for [data.table::fread()],
-#'   [readr::read_delim()], or [read.delim], respectively. This argument should
+#'   [readr::read_delim()], or [read.delim()], respectively. This argument should
 #'   typically be left empty to have the function choose the best reader based
 #'   on the installed packages.
 #' @param sep character; single character used to separate fields within a row.
 #' @param unique logical; should duplicate grouped checklists be removed. If
 #'   `unique = TRUE`, [auk_unique()] is called on the EBD before returning.
 #' @param rollup logical; should taxonomic rollup to species level be applied. 
-#'   If `rollup = TRUE`, [auk_rollup()] is called on the EBD before returning.
+#'   If `rollup = TRUE`, [auk_rollup()] is called on the EBD before returning. 
+#'   Note that this process can be time consuming for large files, try turning 
+#'   rollup off if reading is taking too long.
 #'
 #' @details  This functions performs the following processing steps:
 #'
@@ -37,7 +39,7 @@
 #' @examples
 #' f <- system.file("extdata/ebd-sample.txt", package = "auk")
 #' read_ebd(f)
-read_ebd <- function(x, reader, sep, unique, rollup) {
+read_ebd <- function(x, reader, sep = "\t", unique = TRUE, rollup = TRUE) {
   UseMethod("read_ebd")
 }
 
@@ -136,7 +138,7 @@ read_ebd.auk_ebd <- function(x, reader, sep = "\t", unique = TRUE,
 #' # read a sampling event data file
 #' x <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk") %>%
 #'   read_sampling()
-read_sampling <- function(x, reader, sep, unique) {
+read_sampling <- function(x, reader, sep = "\t", unique = TRUE) {
   UseMethod("read_sampling")
 }
 
@@ -159,4 +161,14 @@ read_sampling.auk_ebd <- function(x, reader, sep = "\t", unique = TRUE) {
     stop("No output sampling event data file in this auk_ebd object.")
   }
   read_sampling(x$output_sampling, reader = reader, sep = sep, unique = unique)
+}
+
+#' @export
+#' @describeIn read_ebd `auk_sampling` object output from [auk_filter()].
+read_sampling.auk_sampling <- function(x, reader, sep = "\t", unique = TRUE) {
+  if (is.null(x$output)) {
+    stop(paste("No output sampling file in this auk_ebd object,",
+               "try calling auk_filter()."))
+  }
+  read_sampling(x$output, reader = reader, sep = sep, unique = unique)
 }

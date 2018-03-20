@@ -16,28 +16,30 @@
 #'   character and space delimited is not allowed since spaces appear in many of
 #'   the fields.
 #'
-#' @details eBird data can be downloaded as a tab-separated text file from the
-#'   [eBird website](http://ebird.org/ebird/data/download) after submitting a
-#'   request for access. As of February 2017, this file is nearly 150 GB making
-#'   it challenging to work with. If you're only interested in a single species
-#'   or a small region it is possible to submit a custom download request. This
-#'   approach is suggested to speed up processing time.
+#' @details 
+#' eBird data can be downloaded as a tab-separated text file from the 
+#' [eBird website](http://ebird.org/ebird/data/download) after submitting a 
+#' request for access. As of February 2017, this file is nearly 150 GB making it
+#' challenging to work with. If you're only interested in a single species or a
+#' small region it is possible to submit a custom download request. This
+#' approach is suggested to speed up processing time.
 #'
-#' @details
 #' There are two potential pathways for preparing eBird data. Users wishing to
-#' produce presence only data, should download the [eBird Basic Dataset](http://ebird.org/ebird/data/download/) 
-#' and reference this file when calling `auk_ebd()`. Users wishing to produce
-#' zero-filled, presence absence data should additionally download the sampling
-#' event data file associated with the basic dataset This file contains only
-#' checklist information and can be used to infer absences. The sampling event
-#' data file should be provided to `auk_ebd()` via the `file_sampling`
-#' argument. For further details consult the vignettes.
+#' produce presence only data, should download the 
+#' [eBird Basic Dataset](http://ebird.org/ebird/data/download/) and reference 
+#' this file when calling `auk_ebd()`. Users wishing to produce zero-filled,
+#' presence absence data should additionally download the sampling event data
+#' file associated with the basic dataset This file contains only checklist
+#' information and can be used to infer absences. The sampling event data file
+#' should be provided to `auk_ebd()` via the `file_sampling` argument. For
+#' further details consult the vignettes.
 #'
 #' @return An `auk_ebd` object storing the file reference and the desired
 #'   filters once created with other package functions.
 #' @export
 #' @examples
-#' # set up reference to example file
+#' # get the path to the example data included in the package
+#' # in practice, provide path to ebd, e.g. f <- "data/ebd_relFeb-2018.txt
 #' f <- system.file("extdata/ebd-sample.txt", package = "auk")
 #' auk_ebd(f)
 #' # to produce zero-filled data, provide a checklist file
@@ -53,6 +55,7 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
 
   # read header rows
   header <- tolower(get_header(file, sep))
+  header <- stringr::str_replace_all(header, "_", " ")
   col_idx <- data.frame(id = NA_character_, 
                         name = header, 
                         index = seq_along(header),
@@ -61,13 +64,13 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
   # identify columns required for filtering
   filter_cols <- data.frame(
     id = c("species",
-           "country", "lat", "lng",
+           "country", "state", "lat", "lng",
            "date", "time", "last_edited",
            "protocol", "project", 
            "duration", "distance", 
            "breeding", "complete"),
     name = c("scientific name",
-             "country code", "latitude", "longitude",
+             "country code", "state code", "latitude", "longitude",
              "observation date", "time observations started",
              "last edited date", 
              "protocol type", "project code",
@@ -119,6 +122,7 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
       filters = list(
         species = character(),
         country = character(),
+        state = character(),
         extent = numeric(),
         date = character(),
         time = character(),
@@ -174,6 +178,16 @@ print.auk_ebd <- function(x, ...) {
     cat(paste(x$filters$country, collapse = ", "))
   } else {
     cat(paste0(length(x$filters$country), " countries"))
+  }
+  cat("\n")
+  # state filter
+  cat("  States: ")
+  if (length(x$filters$state) == 0) {
+    cat("all")
+  } else if (length(x$filters$state) <= 10) {
+    cat(paste(x$filters$state, collapse = ", "))
+  } else {
+    cat(paste0(length(x$filters$state), " states"))
   }
   cat("\n")
   # extent filter
@@ -242,7 +256,7 @@ print.auk_ebd <- function(x, ...) {
     cat(paste0(x$filters$distance[1], "-", x$filters$distance[2], " km"))
   }
   cat("\n")
-  # complete checklists only
+  # breeding codes
   cat("  Records with breeding codes only: ")
   if (x$filters$breeding) {
     cat("yes")

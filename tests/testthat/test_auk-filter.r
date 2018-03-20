@@ -12,7 +12,7 @@ test_that("auk_filter filter an ebd", {
     auk_extent(extent = c(-100, 37, -80, 52)) %>%
     auk_date(date = c("2012-01-01", "2012-12-31")) %>%
     auk_time(start_time = c("06:00", "09:00")) %>%
-    auk_duration(duration = c(0, 60)) %>%
+    auk_duration(duration = c(0, 120)) %>%
     auk_complete()
   # run filters
   tmp <- tempfile()
@@ -28,7 +28,7 @@ test_that("auk_filter filter an ebd", {
 
   expect_is(ebd, "data.frame")
   expect_lt(nrow(ebd), nrow(read_ebd(f)))
-  expect_equal(nrow(ebd), 12)
+  expect_equal(nrow(ebd), 5)
   expect_true(all(ebd$scientific_name %in% filters$filters$species))
   expect_true(all(ebd$country_code %in% filters$filters$country))
   expect_true(all(ebd$all_species_reported))
@@ -43,13 +43,13 @@ test_that("auk_filter filter an ebd", {
   tmp <- tempfile()
   ebd <- auk_ebd(f) %>%
     auk_project("EBIRD_CAN") %>% 
-    auk_protocol("stationary") %>% 
+    auk_protocol("Stationary") %>% 
     auk_filter(file = tmp) %>% 
     read_ebd()
   unlink(tmp)
   
   expect_true(all(ebd$project_code == "EBIRD_CAN"))
-  expect_true(all(ebd$protocol_type == "eBird - Stationary Count"))
+  expect_true(all(ebd$protocol_type == "Stationary"))
   
   # again
   ebd <- system.file("extdata/zerofill-ex_ebd.txt", package = "auk") %>% 
@@ -147,4 +147,57 @@ test_that("auk_filter can save awk file on any system", {
   expect_error(auk_filter(filters, awk_file = tmp))
 
   unlink(tmp)
+})
+
+test_that("auk_filter filter an auk_sampling object", {
+  skip_on_cran()
+  skip_on_os("windows")
+  
+  # set up filters
+  f <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
+  filters <- auk_sampling(f) %>%
+    auk_time(start_time = c("06:00", "09:00")) %>%
+    auk_duration(duration = c(0, 60)) %>%
+    auk_complete()
+  # run filters
+  tmp <- tempfile()
+  sampling <- auk_filter(filters, file = tmp)
+  
+  expect_is(sampling, "auk_sampling")
+  expect_equal(sampling$output, normalizePath(tmp))
+  
+  # read in results
+  s_df <- read_sampling(sampling)
+  unlink(tmp)
+  
+  expect_is(s_df, "data.frame")
+  expect_lt(nrow(s_df), nrow(read_sampling(f)))
+  expect_equal(nrow(s_df), 19)
+  expect_true(all(s_df$time_observations_started >= filters$filters$time[1]))
+  expect_true(all(s_df$time_observations_started <= filters$filters$time[2]))
+  expect_true(all(s_df$duration_minutes >= filters$filters$duration[1]))
+  expect_true(all(s_df$duration_minutes <= filters$filters$duration[2]))
+})
+
+test_that("auk_filter works with wildcard dates", {
+  skip_on_cran()
+  skip_on_os("windows")
+  
+  # set up filters
+  f <- system.file("extdata/ebd-sample.txt", package = "auk")
+  tmp <- tempfile()
+  filters <- auk_ebd(f) %>%
+    auk_date(date = c("*-05-01", "*-06-30"))
+  ebd <- auk_filter(filters, file = tmp) %>% 
+    read_ebd()
+  unlink(tmp)
+  
+  expect_is(ebd, "data.frame")
+  expect_lt(nrow(ebd), nrow(read_ebd(f)))
+  expect_equal(nrow(ebd), 73)
+  month_day <- as.Date(ebd$observation_date) %>% 
+    format("%m-%d")
+  md_range <- sub("*-", "", filters$filters$date, fixed = TRUE)
+  expect_true(all(month_day >= md_range[1]))
+  expect_true(all(month_day <= md_range[2]))
 })

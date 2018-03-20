@@ -1,3 +1,16 @@
+# auk 0.2.0
+
+- New function, `auk_split()`, splits EBD up into multiple files by species
+- New object, `auk_sampling`, and associated methods for working with the sampling data only
+- New function, `auk_select()`, for selecting a subset of columns
+- `auk_date()` now allows filtering date ranges across years using wildcards, e.g. `date = c("*-05-01", "*-06-30")` for observations from May and June of any year
+- New function, `auk_state()` for filtering by state
+- Now using AWK arrays to speed up country and species filtering; ~20% speed up when filtering on many species/countries
+- Allow selection of a subset of columns when filtering
+- Remove free text columns in `auk_clean()` to decrease file size
+- Updated to work with Feb 2018 version of EBD
+- Fixed broken dependency on `countrycode` package
+
 # auk 0.1.0
 
 - eBird taxonomy update to August 2017 version, users should download the most recent EBD to ensure the taxonomy is in sync with the new package

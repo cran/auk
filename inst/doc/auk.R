@@ -10,6 +10,7 @@ suppressPackageStartupMessages(library(dplyr))
 ## ----quickstart, eval = FALSE--------------------------------------------
 #  library(auk)
 #  # path to the ebird data file, here a sample included in the package
+#  # in practice, provide path to ebd, e.g. input_file <- "data/ebd_relFeb-2018.txt"
 #  input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
 #  # output text file
 #  output_file <- "ebd_filtered_grja.txt"
@@ -53,7 +54,7 @@ suppressPackageStartupMessages(library(dplyr))
 #  cleaned <- auk_clean(f, f_out = f_out)
 
 ## ----auk-ebd-------------------------------------------------------------
-ebd <- system.file("extdata/ebd-sample_messy.txt", package = "auk") %>% 
+ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd()
 ebd
 
@@ -106,6 +107,7 @@ awk_script <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
   auk_filter(awk_file = "awk-script.txt", execute = FALSE)
 # read back in and prepare for printing
 awk_file <- readLines(awk_script)
+unlink("awk-script.txt")
 awk_file[!grepl("^[[:space:]]*$", awk_file)] %>% 
   paste0(collapse = "\n") %>% 
   cat()
@@ -121,19 +123,27 @@ nrow(ebd_dupes)
 nrow(ebd_unique)
 
 ## ----auk-rollup----------------------------------------------------------
-ebd_noru <- system.file("extdata/ebd-rollup-ex.txt", package = "auk") %>%
+# read in sample data without rolling up
+ebd <- system.file("extdata/ebd-rollup-ex.txt", package = "auk") %>%
   read_ebd(rollup = FALSE)
-# note the presence of forms for american robin and bewick's wren
-ebd_noru %>% 
-  filter(checklist_id == "S7980609") %>% 
-  select(id = checklist_id, category, 
-         species = common_name, subspecies = subspecies_common_name)
-# taxonomic rollup
-ebd_noru %>% 
-  auk_rollup() %>% 
-  filter(checklist_id == "S7980609") %>% 
-  select(id = checklist_id, category,
-         species = common_name, subspecies = subspecies_common_name)
+# apply roll up
+ebd_ru <- auk_rollup(ebd)
+
+# all taxa not identifiable to species are dropped
+# taxa below species have been rolled up to species
+unique(ebd$category)
+unique(ebd_ru$category)
+
+# yellow-rump warbler subspecies rollup
+# without rollup, there are three observations
+ebd %>%
+  filter(common_name == "Yellow-rumped Warbler") %>%
+  select(checklist_id, category, common_name, subspecies_common_name,
+         observation_count)
+# with rollup, they have been combined
+ebd_ru %>%
+  filter(common_name == "Yellow-rumped Warbler") %>%
+  select(checklist_id, category, common_name, observation_count)
 
 ## ----ebd-zf--------------------------------------------------------------
 # to produce zero-filled data, provide an EBD and sampling event data file

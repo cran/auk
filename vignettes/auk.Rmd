@@ -3,8 +3,10 @@ title: "auk: eBird Data Extraction with AWK"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to auk}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -35,6 +37,7 @@ Because the eBird dataset is so large, step 3 typically takes several hours to r
 ```{r quickstart, eval = FALSE}
 library(auk)
 # path to the ebird data file, here a sample included in the package
+# in practice, provide path to ebd, e.g. input_file <- "data/ebd_relFeb-2018.txt"
 input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
 # output text file
 output_file <- "ebd_filtered_grja.txt"
@@ -97,6 +100,8 @@ system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
 system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
 ```
 
+**Important note:** in this vignette, `system.file()` is used to return the path to the example data included in this package. When using `auk` in practice, provide the path to the location of the EBD on your computer, this could be a relative path, e.g. `"data/ebd_relFeb-2018.txt"`, or an absolute path, e.g. `"~/ebird/ebd_relFeb-2018/ebd_relFeb-2018.txt"`.
+
 ### AWK
 
 R typically works with objects in memory and, as a result, there is a hard limit on the size of objects that can be brought into R. Because eBird contains nearly 500 million sightings, the eBird Basic Dataset is an inherently large file (~150 GB uncompressed) and therefore impossible to manipulate directly in R. Thus it is generally necessary to create a subset of the file outside of R, then import this smaller subset for analysis.
@@ -145,7 +150,7 @@ cleaned <- auk_clean(f, f_out = f_out)
 This package uses an `auk_ebd` object to keep track of the input data file, any filters defined, and the output file that is produced after filtering has been executed. By keeping everything wrapped up in one object, the user can keep track of exactly what set of input data and filters produced any given output data. To set up the initial `auk_ebd` object, use `auk_ebd()`:
 
 ```{r auk-ebd}
-ebd <- system.file("extdata/ebd-sample_messy.txt", package = "auk") %>% 
+ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd()
 ebd
 ```
@@ -156,8 +161,9 @@ ebd
 
 - `auk_species()`: filter by species using common or scientific names.
 - `auk_country()`: filter by country using the standard English names or [ISO 2-letter country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+- `auk_state()`: filter by state using the eBird state codes, see `?ebird_states`.
 - `auk_extent()`: filter by spatial extent, i.e. a range of latitudes and longitudes in decimal degrees.
-- `auk_date()`: filter to checklists from a range of dates.
+- `auk_date()`: filter to checklists from a range of dates. To extract observations from a range of dates, regardless of year, use the wildcard "`*`" in place of the year, e.g. `date = c("*-05-01", "*-06-30")` for observations from May and June of any year.
 - `auk_last_edited()`: filter to checklists from a range of last edited dates, useful for extracting just new or recently edited data.
 - `auk_protocol()`: filter to checklists that following a specific search protocol, either stationary, traveling, or casual.
 - `auk_project()`: filter to checklists collected as part of a specific project (e.g. a breeding bird survey).
@@ -240,6 +246,7 @@ awk_script <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
   auk_filter(awk_file = "awk-script.txt", execute = FALSE)
 # read back in and prepare for printing
 awk_file <- readLines(awk_script)
+unlink("awk-script.txt")
 awk_file[!grepl("^[[:space:]]*$", awk_file)] %>% 
   paste0(collapse = "\n") %>% 
   cat()
@@ -264,22 +271,30 @@ nrow(ebd_unique)
 
 ### Taxonomic rollup
 
-The eBird Basic Dataset includes both true species and other taxa, including domestics, hybrids, subspecies, "spuhs", and recognizable forms. In some cases, a checklist may contain multiple records for the same species, for example, both Audubon and Myrtle Yellow-rumped Warblers, as well as some records that are not resolvable to species, for example, "warbler sp.". For most use cases, a single record for each species on each checklist is desired. The function `ebd_rollup()` addresses these cases by removing taxa not identifiable to species and rolling up taxa identified below species level to a single record for each species in each checklist. 
+The eBird Basic Dataset includes both true species and other taxa, including domestics, hybrids, subspecies, "spuhs", and recognizable forms. In some cases, a checklist may contain multiple records for the same species, for example, both Audubon's and Myrtle Yellow-rumped Warblers, as well as some records that are not resolvable to species, for example, "warbler sp.". For most use cases, a single record for each species on each checklist is desired. The function `ebd_rollup()` addresses these cases by removing taxa not identifiable to species and rolling up taxa identified below species level to a single record for each species in each checklist. 
 
 ```{r auk-rollup}
-ebd_noru <- system.file("extdata/ebd-rollup-ex.txt", package = "auk") %>%
+# read in sample data without rolling up
+ebd <- system.file("extdata/ebd-rollup-ex.txt", package = "auk") %>%
   read_ebd(rollup = FALSE)
-# note the presence of forms for american robin and bewick's wren
-ebd_noru %>% 
-  filter(checklist_id == "S7980609") %>% 
-  select(id = checklist_id, category, 
-         species = common_name, subspecies = subspecies_common_name)
-# taxonomic rollup
-ebd_noru %>% 
-  auk_rollup() %>% 
-  filter(checklist_id == "S7980609") %>% 
-  select(id = checklist_id, category,
-         species = common_name, subspecies = subspecies_common_name)
+# apply roll up
+ebd_ru <- auk_rollup(ebd)
+
+# all taxa not identifiable to species are dropped
+# taxa below species have been rolled up to species
+unique(ebd$category)
+unique(ebd_ru$category)
+
+# yellow-rump warbler subspecies rollup
+# without rollup, there are three observations
+ebd %>%
+  filter(common_name == "Yellow-rumped Warbler") %>%
+  select(checklist_id, category, common_name, subspecies_common_name,
+         observation_count)
+# with rollup, they have been combined
+ebd_ru %>%
+  filter(common_name == "Yellow-rumped Warbler") %>%
+  select(checklist_id, category, common_name, observation_count)
 ```
 
 By default, `read_ebd()` calls `ebd_rollup()` when importing an eBird Basic Dataset file. To avoid this, and retain subspecies, use `read_ebd(rollup = FALSE)`.
@@ -372,10 +387,13 @@ ebd_zf_df
 
 This package is based on the AWK scripts provided in a presentation given by Wesley Hochachka, Daniel Fink, Tom Auer, and Frank La Sorte at the 2016 NAOC eBird Data Workshop on August 15, 2016.
 
+`auk` benefited significantly from the [rOpenSci](https://ropensci.org/) review process, including helpful suggestions from 
+[Auriel Fournier](https://github.com/aurielfournier) and [Edmund Hart](https://github.com/emhart).
+
 ## References
 
 ```
-eBird Basic Dataset. Version: ebd_relFeb-2017. Cornell Lab of Ornithology, Ithaca, New York. May 2013.
+eBird Basic Dataset. Version: ebd_relFeb-2018. Cornell Lab of Ornithology, Ithaca, New York. May 2013.
 
 Guillera-Arroita, G., J.J. Lahoz-Monfort, J. Elith, A. Gordon, H. Kujala, P.E. Lentini, M.A. McCarthy, R. Tingley, and B.A. Wintle. 2015. Is my species distribution model fit for purpose? Matching data and models to applications. Global Ecology and Biogeography 24:276-292.
 ```
