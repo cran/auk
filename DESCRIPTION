@@ -1,6 +1,6 @@
 Package: auk
 Title: eBird Data Extraction and Processing with AWK
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
   person("Matthew", "Strimas-Mackey", email = "mes335@cornell.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8929-7776")),
   person("Eliot", "Miller", role = "aut"),
@@ -27,7 +27,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-03-20 17:59:12 UTC; mes335
+Packaged: 2018-03-28 10:34:27 UTC; mes335
 Author: Matthew Strimas-Mackey [aut, cre]
     (<https://orcid.org/0000-0001-8929-7776>),
   Eliot Miller [aut],
@@ -35,4 +35,4 @@ Author: Matthew Strimas-Mackey [aut, cre]
   Cornell Lab of Ornithology [cph]
 Maintainer: Matthew Strimas-Mackey <mes335@cornell.edu>
 Repository: CRAN
-Date/Publication: 2018-03-20 18:05:28 UTC
+Date/Publication: 2018-03-28 10:51:29 UTC

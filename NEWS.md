@@ -1,3 +1,9 @@
+# auk 0.2.1
+
+- Patch release fixing a couple bugs
+- Removed all non-ASCII characters from example files, closes [issue #14](https://github.com/CornellLabofOrnithology/auk/issues/14)
+- Fixed issue with state filtering not working, closes [issue $16](https://github.com/CornellLabofOrnithology/auk/issues/16)
+
 # auk 0.2.0
 
 - New function, `auk_split()`, splits EBD up into multiple files by species
