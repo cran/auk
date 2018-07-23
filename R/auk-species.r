@@ -14,6 +14,7 @@
 #'
 #' @return An `auk_ebd` object.
 #' @export
+#' @family filter
 #' @examples
 #' # common and scientific names can be mixed
 #' species <- c("Gray Jay", "Pluvialis squatarola")
@@ -35,7 +36,7 @@ auk_species.auk_ebd <- function(x, species, replace = FALSE) {
     is.character(species),
     assertthat::is.flag(replace)
   )
-  species_clean <- ebird_species(species)
+  species_clean <- ebird_species(species, type = "scientific")
 
   # check all species names are valid
   if (any(is.na(species_clean))) {

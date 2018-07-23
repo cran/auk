@@ -1,3 +1,12 @@
+# auk 0.2.2
+
+- Updated to work with EDB version 1.9
+- Modified tests to be more general to all sample data
+- ebird_species() now returns 6-letter species codes
+- Fixed bug causing auk to fail on files downloaded via custom download form
+- Fixed bug with normalizePath() use on Windows
+- Fixed bug with system2() on Windows
+
 # auk 0.2.1
 
 - Patch release fixing a couple bugs

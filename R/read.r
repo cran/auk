@@ -36,6 +36,7 @@
 #'   equal to `sampling_event_identifier` for non-group checklists, and
 #'   `group_identifier` for group checklists.
 #' @export
+#' @family import
 #' @examples
 #' f <- system.file("extdata/ebd-sample.txt", package = "auk")
 #' read_ebd(f)
@@ -52,7 +53,8 @@ read_ebd.character <- function(x, reader, sep = "\t", unique = TRUE,
     assertthat::is.string(x),
     file.exists(x),
     missing(reader) || is.character(reader),
-    assertthat::is.string(sep), nchar(sep) == 1, sep != " ")
+    assertthat::is.string(sep), nchar(sep) == 1, sep != " ",
+    length(readLines(x, 2)) > 1)
 
   # pick reader
   if (missing(reader)) {
