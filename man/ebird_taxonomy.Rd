@@ -4,17 +4,17 @@
 \name{ebird_taxonomy}
 \alias{ebird_taxonomy}
 \title{eBird Taxonomy}
-\format{A data frame with eight variables and 15,251 rows:
+\format{A data frame with eight variables and 16,248 rows:
 \itemize{
-\item \code{taxon_order}: numeric value used to sort rows in taxonomic order.
+\item \code{scientific_name}: scientific name.
+\item \code{common_name}: common name, defaults to English, but different languages
+can be selected using the \code{locale} parameter.
+\item \code{species_code}: a unique alphanumeric code identifying each species.
 \item \code{category}: whether the entry is for a species or another
 field-identifiable taxon, such as \code{spuh}, \code{slash}, \code{hybrid}, etc.
-\item \code{species_code}: a unique alphanumeric code identifying each species.
-\item \code{common_name}: the common name of the species as used in eBird.
-\item \code{scientific_name}: the scientific name of the species.
+\item \code{taxon_order}: numeric value used to sort rows in taxonomic order.
 \item \code{order}: the scientific name of the order that the species belongs to.
-\item \code{family}: the family of the species, in the form "Parulidae (New World
-Warblers)".
+\item \code{family}: the scientific name of the family that the species belongs to.
 \item \code{report_as}: for taxa that can be resolved to true species (i.e. species,
 subspecies, and recognizable forms), this field links to the corresponding
 species code. For taxa that can't be resolved, this field is \code{NA}.
@@ -33,7 +33,8 @@ Non-ASCII characters (e.g. those with accents) have been converted to ASCII
 equivalents in this data frame.
 }
 \seealso{
-Other data: \code{\link{ebird_states}}
+Other data: \code{\link{bcr_codes}},
+  \code{\link{ebird_states}}
 }
 \concept{data}
 \keyword{datasets}

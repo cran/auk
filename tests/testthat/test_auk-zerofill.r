@@ -87,11 +87,11 @@ test_that("auk_zerofill error is auk_unique() hasn't been run", {
 test_that("auk_zerofill lack of complete checklists throws error", {
   f_ebd <- system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
   f_smpl <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
-  ebd <- auk_ebd(f_ebd, f_smpl)
-  ebd$output <- f_ebd
-  ebd$output_sampling <- f_smpl
-
-  expect_error(auk_zerofill(ebd))
+  ebd <- read_ebd(f_ebd)
+  smpl <- read_sampling(f_smpl)
+  smpl$all_species_reported[sample(1:nrow(smpl), 3)] <- FALSE
+  expect_error(auk_zerofill(ebd, smpl))
+  expect_warning(auk_zerofill(ebd, smpl, complete = FALSE))
 })
 
 test_that("auk_zerofill throws errors with bad input data", {

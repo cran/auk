@@ -1,7 +1,7 @@
 context("filter definition")
 
 test_that("auk_species", {
-  species <- c("Gray Jay", "Pluvialis squatarola")
+  species <- c("Canada Jay", "Pluvialis squatarola")
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd() %>%
     auk_species(species)
@@ -29,6 +29,13 @@ test_that("auk_species", {
   expect_error(auk_species(ebd, "bluejay"))
   expect_error(auk_species(ebd, ""))
   expect_error(auk_species(ebd, NA))
+  
+  # taxonomy versions
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd()
+  ebd$file <- "ebd_relAug-2016.txt"
+  expect_warning(auk_species(ebd, "Canada Jay"))
+  expect_silent(auk_species(ebd, "Canada Jay", taxonomy_version = 2016))
 })
 
 test_that("auk_country", {
@@ -115,30 +122,49 @@ test_that("auk_state/country mutually exclusive", {
   expect_length(ebd$filters$state, 2)
 })
 
-test_that("auk_extent", {
+test_that("auk_bcr", {
+  ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+    auk_ebd() %>% 
+    auk_bcr(bcr = 24)
+  
+  # works correctly
+  expect_equal(ebd$filters$bcr, 24)
+  
+  # multiple bcrs
+  ebd <- auk_bcr(ebd, bcr = c(24, 22))
+  expect_equal(ebd$filters$bcr, c(22, 24))
+  
+  # raises error for bad input
+  expect_error(auk_bcr(ebd, "22"))
+  expect_error(auk_bcr(ebd, 2.2))
+  expect_error(auk_bcr(ebd, 0))
+  expect_error(auk_bcr(ebd, 100))
+})
+
+test_that("auk_bbox", {
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd()
 
   # works correctly
   e <- c(-125, 37, -120, 52)
-  ebd <- auk_extent(ebd, e)
-  expect_equal(ebd$filters$extent, e)
+  ebd <- auk_bbox(ebd, e)
+  expect_equal(ebd$filters$bbox, e)
 
   # overwrite
   e <- c(0, 0, 1, 1)
-  ebd <- auk_extent(ebd, e)
-  expect_equal(ebd$filters$extent, e)
+  ebd <- auk_bbox(ebd, e)
+  expect_equal(ebd$filters$bbox, e)
 
   # invalid lat
-  expect_error(auk_extent(ebd, c(0, -91, 1, 1)))
-  expect_error(auk_extent(ebd, c(0, -90, 1, 91)))
-  expect_error(auk_extent(ebd, c(0, 1, 1, 0)))
-  expect_error(auk_extent(ebd, c(0, 0, 1, 0)))
+  expect_error(auk_bbox(ebd, c(0, -91, 1, 1)))
+  expect_error(auk_bbox(ebd, c(0, -90, 1, 91)))
+  expect_error(auk_bbox(ebd, c(0, 1, 1, 0)))
+  expect_error(auk_bbox(ebd, c(0, 0, 1, 0)))
   # invalid lng
-  expect_error(auk_extent(ebd, c(-181, 0, 1, 1)))
-  expect_error(auk_extent(ebd, c(-180, 0, 181, 1)))
-  expect_error(auk_extent(ebd, c(1, 0, 0, 1)))
-  expect_error(auk_extent(ebd, c(0, 0, 0, 1)))
+  expect_error(auk_bbox(ebd, c(-181, 0, 1, 1)))
+  expect_error(auk_bbox(ebd, c(-180, 0, 181, 1)))
+  expect_error(auk_bbox(ebd, c(1, 0, 0, 1)))
+  expect_error(auk_bbox(ebd, c(0, 0, 0, 1)))
 })
 
 test_that("auk_date", {

@@ -1,3 +1,7 @@
+is_integer <- function(x) {
+  is.integer(x) || (is.numeric(x) && all(x == as.integer(x)))
+}
+
 get_header <- function(x, sep = "\t") {
   readLines(x, n = 1) %>%
     stringr::str_split(sep) %>%
@@ -112,8 +116,19 @@ choose_reader <- function(x) {
     }
   } else {
     m <- paste("read.delim is slow for large EBD files, for better performance",
-               "insall the readr or data.table packages.")
+               "install the readr or data.table packages.")
     warning(m)
   }
   return(reader)
+}
+
+ebd_file <- function(x, exists = TRUE) {
+  p <- auk_get_ebd_path()
+  if (file.exists(x)) {
+    return(normalizePath(x))
+  } else if (!is.na(p) && file.exists(file.path(p, x))) {
+    return(normalizePath(file.path(p, x)))
+  } else {
+    stop(paste("File not found:\n", x))
+  }
 }

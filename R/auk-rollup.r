@@ -12,6 +12,11 @@
 #'
 #' @param x data.frame; data frame of eBird data, typically as imported by
 #'   [read_ebd()]
+#' @param taxonomy_version integer; the version (i.e. year) of the taxonomy. In
+#'   most cases, this should be left empty to use the version of the taxonomy
+#'   included in the package. See [get_ebird_taxonomy()].
+#' @param drop_higher logical; whether to remove taxa above species during the 
+#'   rollup process, e.g. "spuhs" like "duck sp.".
 #'   
 #' @details When rolling observations up to species level the observed counts
 #'   are summed across any taxa that resolve to the same species. However, if
@@ -45,6 +50,13 @@
 #'   free-flying (these do not count on personal lists) e.g., Mallard (Domestic
 #'   type). Dropped by `auk_rollup()`.
 #'   
+#'   The rollup process is based on the eBird taxonomy, which is updated once a
+#'   year in August. The `auk` package includes a copy of the eBird taxonomy,
+#'   current at the time of release; however, if the EBD and `auk` versions are
+#'   not aligned, you may need to explicitly specify which version of the
+#'   taxonomy to use, in which case the eBird API will be queried to get the
+#'   correct version of the taxonomy.
+#'   
 #' @return A data frame of the eBird data with taxonomic rollup applied.
 #' @references Consult the [eBird taxonomy](http://help.ebird.org/customer/portal/articles/1006825-the-ebird-taxonomy) 
 #'   page for further details.
@@ -58,10 +70,13 @@
 #' ebd <- read_ebd(f, rollup = FALSE)
 #' # rollup
 #' ebd_ru <- auk_rollup(ebd)
+#' # keep higher taxa
+#' ebd_higher <- auk_rollup(ebd, drop_higher = FALSE)
 #' 
 #' # all taxa not identifiable to species are dropped
 #' unique(ebd$category)
 #' unique(ebd_ru$category)
+#' unique(ebd_higher$category)
 #' 
 #' # yellow-rump warbler subspecies rollup
 #' library(dplyr)
@@ -74,7 +89,7 @@
 #' ebd_ru %>%
 #'   filter(common_name == "Yellow-rumped Warbler") %>% 
 #'   select(checklist_id, category, common_name, observation_count)
-auk_rollup <- function(x) {
+auk_rollup <- function(x, taxonomy_version, drop_higher = TRUE) {
   assertthat::assert_that(
     is.data.frame(x),
     "scientific_name" %in% names(x)
@@ -92,10 +107,35 @@ auk_rollup <- function(x) {
     cid <- rlang::as_quosure(~ sampling_event_identifier)
   }
   
+  # get the correct ebird taxonomy version
+  if (missing(taxonomy_version) || 
+      taxonomy_version == auk_version()$taxonomy_version) {
+    tax <- auk::ebird_taxonomy
+  } else {
+    stopifnot(is_integer(taxonomy_version), length(taxonomy_version) == 1)
+    tax <- get_ebird_taxonomy(version = taxonomy_version)
+  }
+  
   # remove anything not identifiable to a species
-  tax <- dplyr::filter(auk::ebird_taxonomy, .data$category == "species")
+  if (drop_higher) {
+    include <- "species"
+  } else {
+    include <- c("species", "slash", "spuh", "hybrid")
+  }
+  tax <- dplyr::filter(tax, .data$category %in% include)
   tax <- dplyr::select(tax, .data$scientific_name, .data$taxon_order)
   x <- dplyr::inner_join(x, tax, by = "scientific_name")
+  
+  if (nrow(x) == 0) {
+    if ("subspecies_common_name" %in% names(x)) {
+      x$subspecies_common_name <- NULL
+    }
+    if ("subspecies_scientific_name" %in% names(x)) {
+      x$subspecies_scientific_name <- NULL
+    }
+    attr(x, "rollup") <- TRUE
+    return(dplyr::as_tibble(x))
+  }
   
   # summarize species for cases where multiple subspecies reported on same list
   sp <- dplyr::select(x, rlang::UQ(cid), .data$scientific_name,
@@ -122,7 +162,7 @@ auk_rollup <- function(x) {
   
   # drop subspecies fields, set category to species
   if ("category" %in% names(x)) {
-    x$category <- "species"
+    x$category <- ifelse(x$category %in% include, x$category, "species")
   }
   if ("subspecies_common_name" %in% names(x)) {
     x$subspecies_common_name <- NULL
@@ -133,6 +173,5 @@ auk_rollup <- function(x) {
   
   # attribute flag
   attr(x, "rollup") <- TRUE
-  
   dplyr::as_tibble(x)
 }

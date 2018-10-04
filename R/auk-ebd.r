@@ -3,14 +3,17 @@
 #' Create a reference to an eBird Basic Dataset (EBD) file in preparation for
 #' filtering using AWK.
 #'
-#' @param file character; input file.
+#' @param file character; input file. If file is not found as specified, it will
+#'   be looked for in the directory specified by the `EBD_PATH` environment
+#'   variable.
 #' @param file_sampling character; optional input sampling event data (i.e.
 #'   checklists) file, required if you intend to zero-fill the data to produce a
 #'   presence-absence data set. This file consists of just effort information
 #'   for every eBird checklist. Any species not appearing in the EBD for a given
 #'   checklist is implicitly considered to have a count of 0. This file should
 #'   be downloaded at the same time as the basic dataset to ensure they are in
-#'   sync.
+#'   sync. If file is not found as specified, it will be looked for in the
+#'   directory specified by the `EBD_PATH` environment variable.
 #' @param sep character; the input field separator, the eBird data are tab
 #'   separated so this should generally not be modified. Must only be a single
 #'   character and space delimited is not allowed since spaces appear in many of
@@ -50,13 +53,12 @@
 auk_ebd <- function(file, file_sampling, sep = "\t") {
   # checks
   assertthat::assert_that(
-    file.exists(file),
     assertthat::is.string(sep), nchar(sep) == 1, sep != " "
   )
-
+  file <- ebd_file(file)
   # read header rows
   header <- tolower(get_header(file, sep))
-  header <- stringr::str_replace_all(header, "_", " ")
+  header <- stringr::str_replace_all(header, "[^a-z0-9]+", " ")
   # fix for custom download
   header[header == "state province"] <- "state"
   header[header == "subnational1 code"] <- "state code"
@@ -65,16 +67,34 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
                         index = seq_along(header),
                         stringsAsFactors = FALSE)
   
+  # ensure key columns are present
+  mandatory <- c("scientific name",
+                 "country code", "state code",
+                 "latitude", "longitude",
+                 "observation date", "time observations started",
+                 "protocol type",
+                 "duration minutes", "effort distance km",
+                 "all species reported",
+                 "sampling event identifier", "group identifier")
+  col_miss <- mandatory[!(mandatory %in% header)]
+  if (length(col_miss) > 0) {
+    m <- sprintf("Required columns missing from the EBD file:\n\t%s",
+                 paste(col_miss, collapse = "\n\t"))
+    stop(m)
+  }
+  
   # identify columns required for filtering
   filter_cols <- data.frame(
     id = c("species",
-           "country", "state", "lat", "lng",
+           "country", "state", "bcr",
+           "lat", "lng", 
            "date", "time", "last_edited",
            "protocol", "project", 
            "duration", "distance", 
            "breeding", "complete"),
     name = c("scientific name",
-             "country code", "state code", "latitude", "longitude",
+             "country code", "state code", "bcr code",
+             "latitude", "longitude",
              "observation date", "time observations started",
              "last edited date", 
              "protocol type", "project code",
@@ -82,31 +102,32 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
              "breeding bird atlas code",
              "all species reported"),
     stringsAsFactors = FALSE)
-  # all these columns should be in header
-  if (!all(filter_cols$name %in% col_idx$name)) {
-    stop("Problem parsing header in EBD file.")
-  }
+  filter_cols <- filter_cols[filter_cols$name %in% col_idx$name, ]
   col_idx$id[match(filter_cols$name, col_idx$name)] <- filter_cols$id
-
+  
   # process sampling data header
   if (!missing(file_sampling)) {
-    assertthat::assert_that(
-      file.exists(file_sampling)
-    )
-    file_sampling <- normalizePath(file_sampling)
-    # species not in sampling data
+    file_sampling <- ebd_file(file_sampling)
+    # variables not in sampling data
     not_in_sampling <- c("species", "breeding")
     filter_cols_sampling <- filter_cols[!filter_cols$id %in% not_in_sampling, ]
     # read header rows
     header_sampling <- tolower(get_header(file_sampling, sep))
+    # ensure key columns are present
+    mandatory_sampl <- setdiff(mandatory, "scientific name")
+    col_miss <- mandatory_sampl[!(mandatory_sampl %in% header)]
+    if (length(col_miss) > 0) {
+      m <- sprintf("Required columns missing from the sampling file:\n\t%s",
+                   paste(mandatory, collapse = "\n\t"))
+      stop(m)
+    }
+    # identify column locations
     col_idx_sampling <- data.frame(id = NA_character_, 
                                    name = header_sampling, 
                                    index = seq_along(header_sampling),
                                    stringsAsFactors = FALSE)
-    # all these columns should be in header
-    if (!all(filter_cols_sampling$name %in% col_idx_sampling$name)) {
-      stop("Problem parsing header in EBD file.")
-    }
+    col_found <- filter_cols_sampling$name %in% col_idx$name
+    filter_cols_sampling <- filter_cols_sampling[col_found, ]
     mtch <- match(filter_cols_sampling$name, col_idx_sampling$name)
     col_idx_sampling$id[mtch] <- filter_cols_sampling$id
   } else {
@@ -117,7 +138,7 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
   # output
   structure(
     list(
-      file = normalizePath(file),
+      file = file,
       file_sampling = file_sampling,
       output = NULL,
       output_sampling = NULL,
@@ -127,7 +148,8 @@ auk_ebd <- function(file, file_sampling, sep = "\t") {
         species = character(),
         country = character(),
         state = character(),
-        extent = numeric(),
+        bcr = integer(),
+        bbox = numeric(),
         date = character(),
         time = character(),
         last_edited = character(),
@@ -194,9 +216,19 @@ print.auk_ebd <- function(x, ...) {
     cat(paste0(length(x$filters$state), " states"))
   }
   cat("\n")
-  # extent filter
-  cat("  Spatial extent: ")
-  e <- round(x$filters$extent, 1)
+  # bcr filter
+  cat("  BCRs: ")
+  if (length(x$filters$bcr) == 0) {
+    cat("all")
+  } else if (length(x$filters$bcr) <= 10) {
+    cat(paste(x$filters$bcr, collapse = ", "))
+  } else {
+    cat(paste0(length(x$filters$bcr), " BCRs"))
+  }
+  cat("\n")
+  # bbox filter
+  cat("  Bounding box: ")
+  e <- round(x$filters$bbox, 1)
   if (length(e) == 0) {
     cat("full extent")
   } else {

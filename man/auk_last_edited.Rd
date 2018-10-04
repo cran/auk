@@ -33,7 +33,8 @@ system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_last_edited(date = c("2010-01-01", "2010-12-31"))
 }
 \seealso{
-Other filter: \code{\link{auk_breeding}},
+Other filter: \code{\link{auk_bbox}},
+  \code{\link{auk_bcr}}, \code{\link{auk_breeding}},
   \code{\link{auk_complete}}, \code{\link{auk_country}},
   \code{\link{auk_date}}, \code{\link{auk_distance}},
   \code{\link{auk_duration}}, \code{\link{auk_extent}},

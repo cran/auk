@@ -18,7 +18,7 @@ suppressPackageStartupMessages(library(dplyr))
 #    # 1. reference file
 #    auk_ebd() %>%
 #    # 2. define filters
-#    auk_species(species = "Gray Jay") %>%
+#    auk_species(species = "Canada Jay") %>%
 #    auk_country(country = "Canada") %>%
 #    # 3. run filtering
 #    auk_filter(file = output_file) %>%
@@ -29,7 +29,7 @@ suppressPackageStartupMessages(library(dplyr))
 #  input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
 #  output_file <- "ebd_filtered_grja.txt"
 #  ebd <- auk_ebd(input_file)
-#  ebd_filters <- auk_species(ebd, species = "Gray Jay")
+#  ebd_filters <- auk_species(ebd, species = "Canada Jay")
 #  ebd_filters <- auk_country(ebd_filters, country = "Canada")
 #  ebd_filtered <- auk_filter(ebd_filters, file = output_file)
 #  ebd_df <- read_ebd(ebd_filtered)
@@ -45,14 +45,6 @@ suppressPackageStartupMessages(library(dplyr))
 #  # sampling event data
 #  system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
 
-## ----auk-clean, eval = FALSE---------------------------------------------
-#  library(auk)
-#  # sample data, with intentially introduced errors
-#  f <- system.file("extdata/ebd-sample_messy.txt", package = "auk")
-#  f_out <- "ebd_cleaned.txt"
-#  # remove problem records
-#  cleaned <- auk_clean(f, f_out = f_out)
-
 ## ----auk-ebd-------------------------------------------------------------
 ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd()
@@ -61,12 +53,12 @@ ebd
 ## ----auk-filter----------------------------------------------------------
 ebd_filters <- ebd %>% 
   # species: common and scientific names can be mixed
-  auk_species(species = c("Gray Jay", "Cyanocitta cristata")) %>%
+  auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
   # country: codes and names can be mixed; case insensitive
   auk_country(country = c("US", "Canada", "mexico")) %>%
-  # extent: long and lat in decimal degrees
+  # bbox: long and lat in decimal degrees
   # formatted as `c(lng_min, lat_min, lng_max, lat_max)`
-  auk_extent(extent = c(-100, 37, -80, 52)) %>%
+  auk_bbox(bbox = c(-100, 37, -80, 52)) %>%
   # date: use standard ISO date format `"YYYY-MM-DD"`
   auk_date(date = c("2012-01-01", "2012-12-31")) %>%
   # time: 24h format
@@ -81,7 +73,7 @@ ebd_filters
 #  output_file <- "ebd_filtered_blja-grja.txt"
 #  ebd_jays <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #    auk_ebd() %>%
-#    auk_species(species = c("Gray Jay", "Cyanocitta cristata")) %>%
+#    auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
 #    auk_country(country = "Canada") %>%
 #    auk_filter(file = output_file)
 
@@ -94,7 +86,7 @@ system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #  output_file <- "ebd_filtered_blja-grja.txt"
 #  ebd_df <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #    auk_ebd() %>%
-#    auk_species(species = c("Gray Jay", "Cyanocitta cristata")) %>%
+#    auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
 #    auk_country(country = "Canada") %>%
 #    auk_filter(file = output_file) %>%
 #    read_ebd()
@@ -102,7 +94,7 @@ system.file("extdata/ebd-sample.txt", package = "auk") %>%
 ## ----awk-script----------------------------------------------------------
 awk_script <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd() %>% 
-  auk_species(species = c("Gray Jay", "Cyanocitta cristata")) %>% 
+  auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>% 
   auk_country(country = "Canada") %>% 
   auk_filter(awk_file = "awk-script.txt", execute = FALSE)
 # read back in and prepare for printing

@@ -39,7 +39,8 @@ ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
 auk_duration(ebd, duration = c(0, 60))
 }
 \seealso{
-Other filter: \code{\link{auk_breeding}},
+Other filter: \code{\link{auk_bbox}},
+  \code{\link{auk_bcr}}, \code{\link{auk_breeding}},
   \code{\link{auk_complete}}, \code{\link{auk_country}},
   \code{\link{auk_date}}, \code{\link{auk_distance}},
   \code{\link{auk_extent}}, \code{\link{auk_filter}},

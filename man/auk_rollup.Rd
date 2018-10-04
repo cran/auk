@@ -4,11 +4,18 @@
 \alias{auk_rollup}
 \title{Roll up eBird taxonomy to species}
 \usage{
-auk_rollup(x)
+auk_rollup(x, taxonomy_version, drop_higher = TRUE)
 }
 \arguments{
 \item{x}{data.frame; data frame of eBird data, typically as imported by
 \code{\link[=read_ebd]{read_ebd()}}}
+
+\item{taxonomy_version}{integer; the version (i.e. year) of the taxonomy. In
+most cases, this should be left empty to use the version of the taxonomy
+included in the package. See \code{\link[=get_ebird_taxonomy]{get_ebird_taxonomy()}}.}
+
+\item{drop_higher}{logical; whether to remove taxa above species during the
+rollup process, e.g. "spuhs" like "duck sp.".}
 }
 \value{
 A data frame of the eBird data with taxonomic rollup applied.
@@ -57,6 +64,13 @@ Mallard (hybrid). Dropped by \code{auk_rollup()}.
 free-flying (these do not count on personal lists) e.g., Mallard (Domestic
 type). Dropped by \code{auk_rollup()}.
 }
+
+The rollup process is based on the eBird taxonomy, which is updated once a
+year in August. The \code{auk} package includes a copy of the eBird taxonomy,
+current at the time of release; however, if the EBD and \code{auk} versions are
+not aligned, you may need to explicitly specify which version of the
+taxonomy to use, in which case the eBird API will be queried to get the
+correct version of the taxonomy.
 }
 \examples{
 # get the path to the example data included in the package
@@ -66,10 +80,13 @@ f <- system.file("extdata/ebd-rollup-ex.txt", package = "auk")
 ebd <- read_ebd(f, rollup = FALSE)
 # rollup
 ebd_ru <- auk_rollup(ebd)
+# keep higher taxa
+ebd_higher <- auk_rollup(ebd, drop_higher = FALSE)
 
 # all taxa not identifiable to species are dropped
 unique(ebd$category)
 unique(ebd_ru$category)
+unique(ebd_higher$category)
 
 # yellow-rump warbler subspecies rollup
 library(dplyr)

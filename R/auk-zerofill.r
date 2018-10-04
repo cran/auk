@@ -1,10 +1,10 @@
 #' Read and zero-fill an eBird data file
 #'
-#' Read an eBird Basic Dataset (EBD) file, and associated sampling event data file, to
-#' produce a zero-filled, presence-absence dataset. The EBD contains bird
-#' sightings and the sampling event data is a set of all checklists, they can be
-#' combined to infer absence data by assuming any species not reported on a
-#' checklist was had a count of zero.
+#' Read an eBird Basic Dataset (EBD) file, and associated sampling event data
+#' file, to produce a zero-filled, presence-absence dataset. The EBD contains
+#' bird sightings and the sampling event data is a set of all checklists, they
+#' can be combined to infer absence data by assuming any species not reported on
+#' a checklist was had a count of zero.
 #'
 #' @param x filename, `data.frame` of eBird observations, or `auk_ebd` object
 #'   with associated output files as created by [auk_filter()]. If a filename is
@@ -23,11 +23,20 @@
 #'   as scientific or English common names, or a mixture of both. These names
 #'   must match the official eBird Taxomony ([ebird_taxonomy]). To include all
 #'   species, leave this argument blank.
-#' @param sep character; single character used to separate fields within a row.
-#' @param unique logical; should [auk_unique()] be run on the input data if it
-#'   hasn't already.
+#' @param taxonomy_version integer; the version (i.e. year) of the taxonomy. In
+#'   most cases, this should be left empty to use the version of the taxonomy
+#'   included in the package. See [get_ebird_taxonomy()].
 #' @param collapse logical; whether to call `collapse_zerofill()` to return a
 #'   data frame rather than an `auk_zerofill` object.
+#' @param unique logical; should [auk_unique()] be run on the input data if it
+#'   hasn't already.
+#' @param rollup logical; should [auk_rollup()] be run on the input data if it
+#'   hasn't already.
+#' @param drop_higher logical; whether to remove taxa above species during the 
+#'   rollup process, e.g. "spuhs" like "duck sp.". See [auk_rollup()].
+#' @param complete logical; if `TRUE` (the default) all checklists are required 
+#'   to be complete prior to zero-filling.
+#' @param sep character; single character used to separate fields within a row.
 #' @param ... additional arguments passed to methods.
 #'
 #' @details
@@ -45,13 +54,20 @@
 #' by joining the two data frames together to produce a single data frame in
 #' which each row provides both checklist and species information for a
 #' sighting.
+#' 
+#' The list of species is checked against the eBird taxonomy for validity. This
+#' taxonomy is updated once a year in August. The `auk` package includes a copy
+#' of the eBird taxonomy, current at the time of release; however, if the EBD
+#' and `auk` versions are not aligned, you may need to explicitly specify which
+#' version of the taxonomy to use, in which case the eBird API will be queried
+#' to get the correct version of the taxonomy.
 #'
 #' @return By default, an `auk_zerofill` object, or a data frame if `collapse =
 #'   TRUE`.
 #' @export
 #' @family import
 #' @examples
-#' # read and zero-fill the sampling data
+#' # read and zero-fill the ebd data
 #' f_ebd <- system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
 #' f_smpl <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
 #' auk_zerofill(x = f_ebd, sampling_events = f_smpl)
@@ -68,8 +84,11 @@ auk_zerofill <- function(x, ...) {
 
 #' @export
 #' @describeIn auk_zerofill EBD data frame.
-auk_zerofill.data.frame <- function(x, sampling_events, species, unique = TRUE, 
-                                    collapse = FALSE, ...) {
+auk_zerofill.data.frame <- function(x, sampling_events, 
+                                    species, taxonomy_version,
+                                    collapse = FALSE, unique = TRUE, 
+                                    rollup = TRUE, drop_higher = TRUE,
+                                    complete = TRUE, ...) {
   # checks
   assertthat::assert_that(
     is.data.frame(sampling_events),
@@ -80,7 +99,7 @@ auk_zerofill.data.frame <- function(x, sampling_events, species, unique = TRUE,
   # first check for scientific names
   if (!missing(species)) {
     # convert common names to scientific
-    species_clean <- ebird_species(species)
+    species_clean <- ebird_species(species, taxonomy_version = taxonomy_version)
     # check all species names are valid
     if (any(is.na(species_clean))) {
       stop(
@@ -88,6 +107,18 @@ auk_zerofill.data.frame <- function(x, sampling_events, species, unique = TRUE,
                "\n\t",
                paste(species[is.na(species_clean)], collapse =", "))
       )
+    }
+  }
+  
+  # check that we only have complete checklists
+  if (!all(sampling_events$all_species_reported)) {
+    e <- paste0("Some checklists in sampling event data are not complete.\n",
+                "Complete checklists are required for zero-filling.\n",
+                "Try calling auk_complete() when filtering.")
+    if (complete) {
+      stop(e)
+    } else {
+      warning(e)
     }
   }
 
@@ -111,8 +142,8 @@ auk_zerofill.data.frame <- function(x, sampling_events, species, unique = TRUE,
   }
   
   # check that auk_rollup has been run
-  if (!isTRUE(attr(x, "rollup"))) {
-    x <- auk_rollup(x)
+  if (rollup && !isTRUE(attr(x, "rollup"))) {
+    x <- auk_rollup(x, drop_higher = drop_higher)
   }
 
   # subset ebd to remove checklist level fields
@@ -177,8 +208,11 @@ auk_zerofill.data.frame <- function(x, sampling_events, species, unique = TRUE,
 
 #' @export
 #' @describeIn auk_zerofill Filename of EBD.
-auk_zerofill.character <- function(x, sampling_events, species, sep = "\t",
-                                   unique = TRUE, collapse = FALSE, ...) {
+auk_zerofill.character <- function(x, sampling_events, 
+                                   species, taxonomy_version,
+                                   collapse = FALSE, unique = TRUE, 
+                                   rollup = TRUE,  drop_higher = TRUE,
+                                   complete = TRUE, sep = "\t", ...) {
   # checks
   assertthat::assert_that(
     assertthat::is.string(x), file.exists(x),
@@ -187,27 +221,23 @@ auk_zerofill.character <- function(x, sampling_events, species, sep = "\t",
     assertthat::is.string(sep), nchar(sep) == 1, sep != " ")
 
   # read in the two files
-  ebd <- read_ebd(x = x, sep = sep, unique = FALSE)
+  ebd <- read_ebd(x = x, sep = sep, unique = FALSE, rollup = FALSE)
   sed <- read_sampling(x = sampling_events, sep = sep, unique = FALSE)
 
   # pass on to df method
-  auk_zerofill(x = ebd, sampling_events = sed, species = species,
-               unique = unique, collapse = collapse)
+  auk_zerofill(x = ebd, sampling_events = sed, species = species, 
+               collapse = collapse, unique = unique, complete = complete,
+               rollup = rollup)
 }
 
 #' @export
 #' @describeIn auk_zerofill `auk_ebd` object output from [auk_filter()]. Must
 #'   have had a sampling event data file set in the original call to
 #'   [auk_ebd()].
-auk_zerofill.auk_ebd <- function(x, species, sep = "\t",
-                                 unique = TRUE, collapse = FALSE, ...) {
-  # zero-filling requires complete checklists
-  if (!x$filters$complete) {
-    e <- paste0("Sampling event data file provided, but filters have not been ",
-               "set to only return complete checklists. Complete checklists ",
-               "are required for zero-filling. Try calling auk_complete().")
-    stop(e)
-  }
+auk_zerofill.auk_ebd <- function(x, species, taxonomy_version,
+                                 collapse = FALSE, unique = TRUE, 
+                                 rollup = TRUE,  drop_higher = TRUE,
+                                 complete = TRUE, sep = "\t", ...) {
   # check that output files defined
   if (is.null(x$output)) {
     stop("No output EBD file in this auk_ebd object, try calling auk_filter().")
@@ -218,8 +248,9 @@ auk_zerofill.auk_ebd <- function(x, species, sep = "\t",
 
   # pass on to file method
   auk_zerofill(x = x$output, sampling_events = x$output_sampling,
-               species = species, sep = sep, unique = unique,
-               collapse = collapse)
+               species = species, collapse = collapse, 
+               unique = unique, complete = complete, rollup = rollup,
+               sep = sep)
 }
 
 #' @rdname auk_zerofill

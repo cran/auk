@@ -26,7 +26,8 @@ system.file("extdata/ebd-sample.txt", package = "auk") \%>\%
   auk_breeding()
 }
 \seealso{
-Other filter: \code{\link{auk_complete}},
+Other filter: \code{\link{auk_bbox}},
+  \code{\link{auk_bcr}}, \code{\link{auk_complete}},
   \code{\link{auk_country}}, \code{\link{auk_date}},
   \code{\link{auk_distance}}, \code{\link{auk_duration}},
   \code{\link{auk_extent}}, \code{\link{auk_filter}},

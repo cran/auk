@@ -56,9 +56,9 @@
 #' f <- system.file("extdata/ebd-sample.txt", package = "auk")
 #' # define filters
 #' filters <- auk_ebd(f) %>%
-#'   auk_species(species = c("Gray Jay", "Blue Jay")) %>%
+#'   auk_species(species = c("Canada Jay", "Blue Jay")) %>%
 #'   auk_country(country = c("US", "Canada")) %>%
-#'   auk_extent(extent = c(-100, 37, -80, 52)) %>%
+#'   auk_bbox(bbox = c(-100, 37, -80, 52)) %>%
 #'   auk_date(date = c("2012-01-01", "2012-12-31")) %>%
 #'   auk_time(start_time = c("06:00", "09:00")) %>%
 #'   auk_duration(duration = c(0, 60)) %>%
@@ -66,9 +66,9 @@
 #'   
 #' # alternatively, without pipes
 #' ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
-#' filters <- auk_species(ebd, species = c("Gray Jay", "Blue Jay"))
+#' filters <- auk_species(ebd, species = c("Canada Jay", "Blue Jay"))
 #' filters <- auk_country(filters, country = c("US", "Canada"))
-#' filters <- auk_extent(filters, extent = c(-100, 37, -80, 52))
+#' filters <- auk_bbox(filters, bbox = c(-100, 37, -80, 52))
 #' filters <- auk_date(filters, date = c("2012-01-01", "2012-12-31"))
 #' filters <- auk_time(filters, start_time = c("06:00", "09:00"))
 #' filters <- auk_duration(filters, duration = c(0, 60))
@@ -93,7 +93,7 @@ auk_filter.auk_ebd <- function(x, file, file_sampling, keep, drop, awk_file,
                                sep = "\t", filter_sampling = TRUE, 
                                execute = TRUE, overwrite = FALSE, ...) {
   # checks
-  awk_path <- auk_getpath()
+  awk_path <- auk_get_awk_path()
   if (execute && is.na(awk_path)) {
     stop("auk_filter() requires a valid AWK install, unless execute = FALSE.")
   }
@@ -257,7 +257,7 @@ auk_filter.auk_sampling <- function(x, file, keep, drop, awk_file,
                                     sep = "\t", execute = TRUE, 
                                     overwrite = FALSE, ...) {
   # checks
-  awk_path <- auk_getpath()
+  awk_path <- auk_get_awk_path()
   if (execute && is.na(awk_path)) {
     stop("auk_filter() requires a valid AWK install, unless execute = FALSE.")
   }
@@ -406,9 +406,18 @@ awk_translate <- function(filters, col_idx, sep, select) {
     condition <- paste0("$", idx, " in states")
     filter_strings$state <- str_interp(awk_if, list(condition = condition))
   }
-  # extent filter
-  if (length(filters$extent) == 0) {
-    filter_strings$extent <- ""
+  # bcr filter
+  if (length(filters$bcr) == 0) {
+    filter_strings$bcr <- ""
+  } else {
+    idx <- col_idx$index[col_idx$id == "bcr"]
+    condition <- paste0("$", idx, " == \"", filters$bcr, "\"",
+                        collapse = " || ")
+    filter_strings$bcr <- str_interp(awk_if, list(condition = condition))
+  }
+  # bbox filter
+  if (length(filters$bbox) == 0) {
+    filter_strings$bbox <- ""
   } else {
     lat_idx <- col_idx$index[col_idx$id == "lat"]
     lng_idx <- col_idx$index[col_idx$id == "lng"]
@@ -417,9 +426,9 @@ awk_translate <- function(filters, col_idx, sep, select) {
                         "$${lat_idx} >= ${ymn} && ",
                         "$${lat_idx} <= ${ymx}") %>%
       str_interp(list(lat_idx = lat_idx, lng_idx = lng_idx,
-                      xmn = filters$extent[1], xmx = filters$extent[3],
-                      ymn = filters$extent[2], ymx = filters$extent[4]))
-    filter_strings$extent <- str_interp(awk_if, list(condition = condition))
+                      xmn = filters$bbox[1], xmx = filters$bbox[3],
+                      ymn = filters$bbox[2], ymx = filters$bbox[4]))
+    filter_strings$bbox <- str_interp(awk_if, list(condition = condition))
   }
   # date filter
   if (length(filters$date) == 0) {
@@ -505,11 +514,12 @@ awk_translate <- function(filters, col_idx, sep, select) {
       p_idx <- col_idx$index[col_idx$id == "protocol"]
       inc_stat <- str_interp("$${idx} == \"Stationary\"",
                              list(idx = p_idx))
-      condition <- str_interp("${inc} || ($${idx} >= ${mn} && $${idx} <= ${mx})",
-                              list(idx = idx,
-                                   mn = filters$distance[1],
-                                   mx = filters$distance[2],
-                                   inc = inc_stat))
+      condition <- str_interp(
+        "${inc} || ($${idx} >= ${mn} && $${idx} <= ${mx})",
+        list(idx = idx,
+             mn = filters$distance[1],
+             mx = filters$distance[2],
+             inc = inc_stat))
     } else {
       condition <- str_interp("$${idx} >= ${mn} && $${idx} <= ${mx}",
                               list(idx = idx,
@@ -555,7 +565,8 @@ BEGIN {
   ${species}
   ${country}
   ${state}
-  ${extent}
+  ${bcr}
+  ${bbox}
   ${date_substr}
   ${date}
   ${time}

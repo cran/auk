@@ -32,10 +32,9 @@
 auk_sampling <- function(file, sep = "\t") {
   # checks
   assertthat::assert_that(
-    file.exists(file),
     assertthat::is.string(sep), nchar(sep) == 1, sep != " "
   )
-  
+  file <- ebd_file(file)
   # read header rows
   header <- tolower(get_header(file, sep))
   header <- stringr::str_replace_all(header, "_", " ")
@@ -43,6 +42,21 @@ auk_sampling <- function(file, sep = "\t") {
                         name = header, 
                         index = seq_along(header),
                         stringsAsFactors = FALSE)
+  
+  # ensure key columns are present
+  mandatory <- c("country code", "state code",
+                 "latitude", "longitude",
+                 "observation date", "time observations started",
+                 "protocol type",
+                 "duration minutes", "effort distance km",
+                 "all species reported",
+                 "sampling event identifier", "group identifier")
+  col_miss <- mandatory[!(mandatory %in% header)]
+  if (length(col_miss) > 0) {
+    m <- sprintf("Required columns missing from the sampling file:\n\t%s",
+                 paste(col_miss, collapse = "\n\t"))
+    stop(m)
+  }
   
   # identify columns required for filtering
   filter_cols <- data.frame(
@@ -58,10 +72,7 @@ auk_sampling <- function(file, sep = "\t") {
              "duration minutes", "effort distance km",
              "all species reported"),
     stringsAsFactors = FALSE)
-  # all these columns should be in header
-  if (!all(filter_cols$name %in% col_idx$name)) {
-    stop("Problem parsing header in sampling event file.")
-  }
+  filter_cols <- filter_cols[filter_cols$name %in% col_idx$name, ]
   col_idx$id[match(filter_cols$name, col_idx$name)] <- filter_cols$id
   
   # output
@@ -73,7 +84,7 @@ auk_sampling <- function(file, sep = "\t") {
       filters = list(
         country = character(),
         state = character(),
-        extent = numeric(),
+        bbox = numeric(),
         date = character(),
         time = character(),
         last_edited = character(),
@@ -123,9 +134,9 @@ print.auk_sampling <- function(x, ...) {
     cat(paste0(length(x$filters$state), " states"))
   }
   cat("\n")
-  # extent filter
-  cat("  Spatial extent: ")
-  e <- round(x$filters$extent, 1)
+  # bbox filter
+  cat("  Bounding box: ")
+  e <- round(x$filters$bbox, 1)
   if (length(e) == 0) {
     cat("full extent")
   } else {
