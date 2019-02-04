@@ -59,7 +59,7 @@ auk_split <- function(file, species, taxonomy_version,
     assertthat::is.string(sep), nchar(sep) == 1, sep != " ",
     assertthat::is.flag(overwrite)
   )
-  file <- normalizePath(file)
+  file <- normalizePath(file, winslash = "/")
   
   # check all species names are valid and convert to scientific
   species_clean <- ebird_species(species, taxonomy_version = taxonomy_version)
@@ -77,7 +77,7 @@ auk_split <- function(file, species, taxonomy_version,
   if (!dir.exists(dirname(prefix))) {
     stop("Output directory doesn't exist.")
   }
-  prefix <- normalizePath(prefix, mustWork = FALSE)
+  prefix <- normalizePath(prefix, winslash = "/", mustWork = FALSE)
   f_sp <- paste0(prefix,
                  stringr::str_replace_all(species_clean, "[^a-zA-Z]", "_"),
                  ".", ext)
@@ -112,7 +112,8 @@ auk_split <- function(file, species, taxonomy_version,
                          prefix = prefix, ext = ext))
   
   # run command
-  exit_code <- system2(awk_path, args = paste0("'", awk, "' ", file))
+  exit_code <- system2(awk_path, args = paste0("'", awk, "' ", file), 
+                       stderr = FALSE)
   if (exit_code == 0) {
     f_sp
   } else {
