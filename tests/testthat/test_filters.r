@@ -31,6 +31,7 @@ test_that("auk_species", {
   expect_error(auk_species(ebd, NA))
   
   # taxonomy versions
+  skip_if_offline()
   ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
     auk_ebd()
   ebd$file <- "ebd_relAug-2016.txt"
@@ -208,14 +209,18 @@ test_that("auk_date wildcards", {
   d <- c("*-05-01", "*-06-30")
   ebd <- auk_date(ebd, d)
   expect_equivalent(ebd$filters$date, d)
+  expect_true(!attr(ebd$filters$date, "wrap"))
   expect_true(attr(ebd$filters$date, "wildcard"))
   
   # invalid date format
   expect_error(auk_date(ebd, "*-01-01"))
   expect_error(auk_date(ebd, c("*-05-01", "2012-06-30")))
   
-  # dates not sequential
-  expect_error(auk_date(ebd, c("*-12-31", "*-01-01")))
+  # dates can wrap
+  wrapped <- auk_date(ebd, c("*-12-31", "*-01-01"))
+  expect_is(wrapped, "auk_ebd")
+  expect_true(attr(wrapped$filters$date, "wrap"))
+  expect_true(attr(wrapped$filters$date, "wildcard"))
 })
 
 test_that("auk_last_edited", {

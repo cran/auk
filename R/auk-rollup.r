@@ -58,7 +58,7 @@
 #'   correct version of the taxonomy.
 #'   
 #' @return A data frame of the eBird data with taxonomic rollup applied.
-#' @references Consult the [eBird taxonomy](http://help.ebird.org/customer/portal/articles/1006825-the-ebird-taxonomy) 
+#' @references Consult the [eBird taxonomy](https://ebird.org/science/the-ebird-taxonomy) 
 #'   page for further details.
 #' @export
 #' @family pre
@@ -155,7 +155,7 @@ auk_rollup <- function(x, taxonomy_version, drop_higher = TRUE) {
   x <- dplyr::ungroup(x)
   
   # update counts with summary
-  x <- dplyr::inner_join(x, sp, by = c(as.character(cid)[2], "scientific_name"))
+  x <- dplyr::inner_join(x, sp, by = c(rlang::quo_text(cid), "scientific_name"))
   x <- dplyr::mutate(x, observation_count = .data$count)
   x <- dplyr::select(x, -.data$count, -.data$taxon_order)
   
