@@ -1,3 +1,9 @@
+# auk 0.4.0
+
+- Updated to 2019 eBird taxonomy
+- `auk_observer()` filter added
+- `tidyr::complete_()` deprecated, stopped using
+
 # auk 0.3.3
 
 - Dates can now wrap in `auk_date()`, e.g. use `date = c("*-12-01", "*-01-31")` for records from December or January

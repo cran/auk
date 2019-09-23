@@ -210,6 +210,9 @@ auk_filter.auk_ebd <- function(x, file, file_sampling, keep, drop, awk_file,
     s_filters <- x$filters
     s_filters$species <- character()
     s_filters$breeding <- FALSE
+    # fix observer filter
+    s_filters$observer <- stringr::str_replace(s_filters$observer, 
+                                               "^obsr", "obs")
     awk_script_sampling <- awk_translate(filters = s_filters,
                                          col_idx = x$col_idx_sampling,
                                          sep = sep,
@@ -225,16 +228,6 @@ auk_filter.auk_ebd <- function(x, file, file_sampling, keep, drop, awk_file,
   }
 
   # run awk
-  # ebd
-  exit_code <- system2(awk_path,
-                       args = paste0("'", awk_script, "' '", x$file, "'"),
-                       stdout = file, stderr = FALSE)
-  if (exit_code != 0) {
-    stop("Error running AWK command.")
-  } else {
-    x$output <- normalizePath(file, winslash = "/")
-  }
-
   # ebd sampling
   if (filter_sampling) {
     exit_code <- system2(awk_path,
@@ -246,6 +239,16 @@ auk_filter.auk_ebd <- function(x, file, file_sampling, keep, drop, awk_file,
     } else {
       x$output_sampling <- normalizePath(file_sampling, winslash = "/")
     }
+  }
+  
+  # ebd
+  exit_code <- system2(awk_path,
+                       args = paste0("'", awk_script, "' '", x$file, "'"),
+                       stdout = file, stderr = FALSE)
+  if (exit_code != 0) {
+    stop("Error running AWK command.")
+  } else {
+    x$output <- normalizePath(file, winslash = "/")
   }
   return(x)
 }
@@ -316,6 +319,10 @@ auk_filter.auk_sampling <- function(x, file, keep, drop, awk_file,
   } else {
     select_cols <- "$0"
   }
+  
+  # fix observer filter
+  x$filters$observer <- stringr::str_replace(x$filters$observer, 
+                                             "^obsr", "obs")
   
   # create awk script for the sampling event file
   awk_script <- awk_translate(filters = x$filters,
@@ -543,6 +550,23 @@ awk_translate <- function(filters, col_idx, sep, select) {
   } else {
     filter_strings$complete <- ""
   }
+  # observer filter
+  if (length(filters$observer) == 0) {
+    filter_strings$observer_array <- ""
+    filter_strings$observer <- ""
+  } else {
+    # generate list
+    observer_list <- paste(filters$observer, collapse = "\t")
+    observer_array <- "
+    split(\"%s\", observerValues, \"\t\")
+    for (i in observerValues) observers[observerValues[i]] = 1"
+    filter_strings$observer_array <- sprintf(observer_array, observer_list)
+    
+    # check in list
+    idx <- col_idx$index[col_idx$id == "observer"]
+    condition <- paste0("$", idx, " in observers")
+    filter_strings$observer <- str_interp(awk_if, list(condition = condition))
+  }
 
   # generate awk script
   str_interp(awk_filter, filter_strings)
@@ -556,6 +580,7 @@ BEGIN {
   ${species_array}
   ${country_array}
   ${state_array}
+  ${observer_array}
 }
 {
   keep = 1
@@ -576,6 +601,7 @@ BEGIN {
   ${distance}
   ${breeding}
   ${complete}
+  ${observer}
 
   # keeps header
   if (NR == 1) {
