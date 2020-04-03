@@ -4,11 +4,13 @@
 \name{bcr_codes}
 \alias{bcr_codes}
 \title{BCR Codes}
-\format{A data frame with two variables and 66 rows:
+\format{
+A data frame with two variables and 66 rows:
 \itemize{
 \item \code{bcr_code}: integer code from 1 to 66.
 \item \code{bcr_name}: name of BCR.
-}}
+}
+}
 \usage{
 bcr_codes
 }
@@ -19,8 +21,9 @@ and resource management issues. These codes are required to filter by BCR
 using \code{\link[=auk_bcr]{auk_bcr()}}.
 }
 \seealso{
-Other data: \code{\link{ebird_states}},
-  \code{\link{ebird_taxonomy}}
+Other data: 
+\code{\link{ebird_states}},
+\code{\link{ebird_taxonomy}}
 }
 \concept{data}
 \keyword{datasets}

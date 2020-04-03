@@ -1,4 +1,4 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
 suppressPackageStartupMessages(library(auk))
 suppressPackageStartupMessages(library(dplyr))
 
-## ----quickstart, eval = FALSE--------------------------------------------
+## ----quickstart, eval = FALSE-------------------------------------------------
 #  library(auk)
 #  # path to the ebird data file, here a sample included in the package
 #  # in practice, provide path to ebd, e.g. input_file <- "data/ebd_relFeb-2018.txt"
@@ -25,7 +25,7 @@ suppressPackageStartupMessages(library(dplyr))
 #    # 4. read text file into r data frame
 #    read_ebd()
 
-## ----quickstart-nopipes, eval = FALSE------------------------------------
+## ----quickstart-nopipes, eval = FALSE-----------------------------------------
 #  input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
 #  output_file <- "ebd_filtered_grja.txt"
 #  ebd <- auk_ebd(input_file)
@@ -34,23 +34,23 @@ suppressPackageStartupMessages(library(dplyr))
 #  ebd_filtered <- auk_filter(ebd_filters, file = output_file)
 #  ebd_df <- read_ebd(ebd_filtered)
 
-## ----example-data-1, eval = FALSE----------------------------------------
+## ----example-data-1, eval = FALSE---------------------------------------------
 #  library(auk)
 #  library(dplyr)
 #  system.file("extdata/ebd-sample.txt", package = "auk")
 
-## ----example-data-2, eval = FALSE----------------------------------------
+## ----example-data-2, eval = FALSE---------------------------------------------
 #  # ebd
 #  system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
 #  # sampling event data
 #  system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
 
-## ----auk-ebd-------------------------------------------------------------
+## ----auk-ebd------------------------------------------------------------------
 ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd()
 ebd
 
-## ----auk-filter----------------------------------------------------------
+## ----auk-filter---------------------------------------------------------------
 ebd_filters <- ebd %>% 
   # species: common and scientific names can be mixed
   auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
@@ -69,7 +69,7 @@ ebd_filters <- ebd %>%
   auk_complete()
 ebd_filters
 
-## ----auk-complete, eval = FALSE------------------------------------------
+## ----auk-complete, eval = FALSE-----------------------------------------------
 #  output_file <- "ebd_filtered_blja-grja.txt"
 #  ebd_jays <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #    auk_ebd() %>%
@@ -77,12 +77,12 @@ ebd_filters
 #    auk_country(country = "Canada") %>%
 #    auk_filter(file = output_file)
 
-## ----read----------------------------------------------------------------
+## ----read---------------------------------------------------------------------
 system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   read_ebd() %>% 
   glimpse()
 
-## ----read-auk-ebd, eval = FALSE------------------------------------------
+## ----read-auk-ebd, eval = FALSE-----------------------------------------------
 #  output_file <- "ebd_filtered_blja-grja.txt"
 #  ebd_df <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #    auk_ebd() %>%
@@ -91,7 +91,7 @@ system.file("extdata/ebd-sample.txt", package = "auk") %>%
 #    auk_filter(file = output_file) %>%
 #    read_ebd()
 
-## ----awk-script----------------------------------------------------------
+## ----awk-script---------------------------------------------------------------
 awk_script <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
   auk_ebd() %>% 
   auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>% 
@@ -104,7 +104,7 @@ awk_file[!grepl("^[[:space:]]*$", awk_file)] %>%
   paste0(collapse = "\n") %>% 
   cat()
 
-## ----auk-unique----------------------------------------------------------
+## ----auk-unique---------------------------------------------------------------
 # read in an ebd file and don't automatically remove duplicates
 ebd_dupes <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
   read_ebd(unique = FALSE)
@@ -114,7 +114,7 @@ ebd_unique <- auk_unique(ebd_dupes)
 nrow(ebd_dupes)
 nrow(ebd_unique)
 
-## ----auk-rollup----------------------------------------------------------
+## ----auk-rollup---------------------------------------------------------------
 # read in sample data without rolling up
 ebd <- system.file("extdata/ebd-rollup-ex.txt", package = "auk") %>%
   read_ebd(rollup = FALSE)
@@ -137,7 +137,7 @@ ebd_ru %>%
   filter(common_name == "Yellow-rumped Warbler") %>%
   select(checklist_id, category, common_name, observation_count)
 
-## ----ebd-zf--------------------------------------------------------------
+## ----ebd-zf-------------------------------------------------------------------
 # to produce zero-filled data, provide an EBD and sampling event data file
 f_ebd <- system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
 f_smp <- system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
@@ -147,19 +147,19 @@ filters <- auk_ebd(f_ebd, file_sampling = f_smp) %>%
   auk_complete()
 filters
 
-## ----zf-filter-fake, echo = FALSE----------------------------------------
+## ----zf-filter-fake, echo = FALSE---------------------------------------------
 # needed to allow building vignette on machines without awk
 ebd_sed_filtered <- filters
 ebd_sed_filtered$output <- "ebd-filtered.txt"
 ebd_sed_filtered$output_sampling <- "sampling-filtered.txt"
 
-## ----zf-filter, eval = -1------------------------------------------------
+## ----zf-filter, eval = -1-----------------------------------------------------
 ebd_sed_filtered <- auk_filter(filters, 
                                file = "ebd-filtered.txt",
                                file_sampling = "sampling-filtered.txt")
 ebd_sed_filtered
 
-## ----auk-zf-fake, echo = FALSE-------------------------------------------
+## ----auk-zf-fake, echo = FALSE------------------------------------------------
 # needed to allow building vignette on machines without awk
 fake_ebd <- read_ebd(f_ebd)
 fake_smp <- read_sampling(f_smp)
@@ -177,15 +177,15 @@ fake_smp <- subset(
     time_observations_started <= filters$filters$time[2])
 ebd_zf <- auk_zerofill(fake_ebd, fake_smp)
 
-## ----auk-zf, eval = -1---------------------------------------------------
+## ----auk-zf, eval = -1--------------------------------------------------------
 ebd_zf <- auk_zerofill(ebd_sed_filtered)
 ebd_zf
 
-## ----zf-components-------------------------------------------------------
+## ----zf-components------------------------------------------------------------
 head(ebd_zf$observations)
 glimpse(ebd_zf$sampling_events)
 
-## ----zf-collapse, eval = -1----------------------------------------------
+## ----zf-collapse, eval = -1---------------------------------------------------
 ebd_zf_df <- auk_zerofill(ebd_filtered, collapse = TRUE)
 ebd_zf_df <- collapse_zerofill(ebd_zf)
 class(ebd_zf_df)

@@ -10,9 +10,13 @@ auk_bbox(x, bbox)
 \item{x}{\code{auk_ebd} or \code{auk_sampling} object; reference to file created by
 \code{\link[=auk_ebd]{auk_ebd()}} or \code{\link[=auk_sampling]{auk_sampling()}}.}
 
-\item{bbox}{numeric; spatial bounding box expressed as the range
-of latitudes and longitudes in decimal degrees: \code{c(lng_min, lat_min, lng_max, lat_max)}. Note that longitudes in the Western Hemisphere and
-latitudes sound of the equator should be given as negative numbers.}
+\item{bbox}{numeric or \code{sf} or \verb{Raster*} object; spatial bounding box
+expressed as the range of latitudes and longitudes in decimal degrees:
+\code{c(lng_min, lat_min, lng_max, lat_max)}. Note that longitudes in the
+Western Hemisphere and latitudes sound of the equator should be given as
+negative numbers. Alternatively, a spatial object from either the \code{sf} or
+\code{raster} packages can be provided and the bounding box will be extracted
+from this object.}
 }
 \value{
 An \code{auk_ebd} object.
@@ -37,14 +41,22 @@ ebd <- auk_ebd(system.file("extdata/ebd-sample.txt", package = "auk"))
 auk_bbox(ebd, bbox = c(-125, 37, -120, 52))
 }
 \seealso{
-Other filter: \code{\link{auk_bcr}},
-  \code{\link{auk_breeding}}, \code{\link{auk_complete}},
-  \code{\link{auk_country}}, \code{\link{auk_date}},
-  \code{\link{auk_distance}}, \code{\link{auk_duration}},
-  \code{\link{auk_extent}}, \code{\link{auk_filter}},
-  \code{\link{auk_last_edited}},
-  \code{\link{auk_observer}}, \code{\link{auk_project}},
-  \code{\link{auk_protocol}}, \code{\link{auk_species}},
-  \code{\link{auk_state}}, \code{\link{auk_time}}
+Other filter: 
+\code{\link{auk_bcr}()},
+\code{\link{auk_breeding}()},
+\code{\link{auk_complete}()},
+\code{\link{auk_country}()},
+\code{\link{auk_date}()},
+\code{\link{auk_distance}()},
+\code{\link{auk_duration}()},
+\code{\link{auk_extent}()},
+\code{\link{auk_filter}()},
+\code{\link{auk_last_edited}()},
+\code{\link{auk_observer}()},
+\code{\link{auk_project}()},
+\code{\link{auk_protocol}()},
+\code{\link{auk_species}()},
+\code{\link{auk_state}()},
+\code{\link{auk_time}()}
 }
 \concept{filter}

@@ -1,4 +1,4 @@
-## ----print-filter, eval=FALSE--------------------------------------------
+## ----print-filter, eval=FALSE-------------------------------------------------
 #  # color filter
 #  cat("  Feather color: ")
 #  if (length(x$filters$color) == 0) {
@@ -8,7 +8,7 @@
 #  }
 #  cat("\n")
 
-## ----awk-code, eval=FALSE------------------------------------------------
+## ----awk-code, eval=FALSE-----------------------------------------------------
 #    # color filter
 #    if (length(filters$color) == 0) {
 #      filter_strings$color <- ""
@@ -19,7 +19,7 @@
 #      filter_strings$color <- str_interp(awk_if, list(condition = condition))
 #    }
 
-## ----species-specific, eval=FALSE----------------------------------------
+## ----species-specific, eval=FALSE---------------------------------------------
 #  s_filters <- x$filters
 #  s_filters$species <- character()
 #  ## ADD THIS LINE

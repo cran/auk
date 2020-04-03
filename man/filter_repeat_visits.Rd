@@ -4,9 +4,16 @@
 \alias{filter_repeat_visits}
 \title{Filter observations to repeat visits for hierarchical modeling}
 \usage{
-filter_repeat_visits(x, min_obs = 2L, max_obs = 10L, n_days = 14L,
-  annual_closure = FALSE, date_var = "observation_date",
-  site_vars = c("locality_id", "observer_id"))
+filter_repeat_visits(
+  x,
+  min_obs = 2L,
+  max_obs = 10L,
+  annual_closure = TRUE,
+  n_days = NULL,
+  date_var = "observation_date",
+  site_vars = c("locality_id", "observer_id"),
+  ll_digits = 6L
+)
 }
 \arguments{
 \item{x}{\code{data.frame}; observation data, e.g. data from the eBird Basic
@@ -20,19 +27,28 @@ site.}
 
 \item{max_obs}{integer; maximum number of observations allowed for each site.}
 
+\item{annual_closure}{logical; whether the entire year should be treated as
+the period of closure (the default). This can be useful, for example, if
+the data have been subset to a period of closure prior to calling
+\code{\link[=filter_repeat_visits]{filter_repeat_visits()}}.}
+
 \item{n_days}{integer; number of days defining the temporal length of
 closure. Ignored if \code{annual_closure = TRUE}.}
-
-\item{annual_closure}{logical; whether the entire year should be treated as
-the period of closure. This can be useful, for example, if data are from
-one season (e.g. breeding) across multiple years.}
 
 \item{date_var}{character; column name of the variable in \code{x} containing the
 date. This column should either be in \code{Date} format or convertible to
 \code{Date} format with \code{\link[=as.Date]{as.Date()}}.}
 
 \item{site_vars}{character; names of one of more columns in \code{x} that define a
-site, typically the location and observer IDs.}
+site, typically the location (e.g. latitude/longitude) and observer ID.}
+
+\item{ll_digits}{integer; the number of digits to round latitude and longitude
+to. If latitude and/or longitude are used as \code{site_vars}, it's usually best
+to round them prior to identifying sites, otherwise locations that are only
+slightly offset (e.g. a few centimeters) will be treated as different. This
+argument can also be used to group sites together that are close but not
+identical. Note that 1 degree of latitude is approximately 100 km, so the
+default value of 6 for \code{ll_digits} is equivalent to about 10 cm.}
 }
 \value{
 A \code{data.frame} filtered to only retain observations from sites with
@@ -82,6 +98,7 @@ ebd_zf <- auk_zerofill(x = f_ebd, sampling_events = f_smpl,
 filter_repeat_visits(ebd_zf, n_days = 30)
 }
 \seealso{
-Other modeling: \code{\link{format_unmarked_occu}}
+Other modeling: 
+\code{\link{format_unmarked_occu}()}
 }
 \concept{modeling}
