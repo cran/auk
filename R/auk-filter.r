@@ -410,6 +410,23 @@ awk_translate <- function(filters, col_idx, sep, select) {
     condition <- paste0("$", idx, " in states")
     filter_strings$state <- str_interp(awk_if, list(condition = condition))
   }
+  # county filter
+  if (length(filters$county) == 0) {
+    filter_strings$county_array <- ""
+    filter_strings$county <- ""
+  } else {
+    # generate list
+    county_list <- paste(filters$county, collapse = "\t")
+    county_array <- "
+    split(\"%s\", countyValues, \"\t\")
+    for (i in countyValues) county[countyValues[i]] = 1"
+    filter_strings$county_array <- sprintf(county_array, county_list)
+    
+    # check in list
+    idx <- col_idx$index[col_idx$id == "county"]
+    condition <- paste0("$", idx, " in county")
+    filter_strings$county <- str_interp(awk_if, list(condition = condition))
+  }
   # bcr filter
   if (length(filters$bcr) == 0) {
     filter_strings$bcr <- ""
@@ -433,6 +450,18 @@ awk_translate <- function(filters, col_idx, sep, select) {
                       xmn = filters$bbox[1], xmx = filters$bbox[3],
                       ymn = filters$bbox[2], ymx = filters$bbox[4]))
     filter_strings$bbox <- str_interp(awk_if, list(condition = condition))
+  }
+  # year filter
+  if (length(filters$year) == 0) {
+    filter_strings$year_substr <- ""
+    filter_strings$year <- ""
+  } else {
+    # extract just the year with awk
+    idx <- col_idx$index[col_idx$id == "date"]
+    filter_strings$year_substr <- sprintf("yr = substr($%i, 1, 4)", idx)
+    # subset to set of years
+    condition <- paste0("yr == ", filters$year, collapse = " || ")
+    filter_strings$year <- str_interp(awk_if, list(condition = condition))
   }
   # date filter
   if (length(filters$date) == 0) {
@@ -580,6 +609,7 @@ BEGIN {
   ${species_array}
   ${country_array}
   ${state_array}
+  ${county_array}
   ${observer_array}
 }
 {
@@ -589,8 +619,11 @@ BEGIN {
   ${species}
   ${country}
   ${state}
+  ${county}
   ${bcr}
   ${bbox}
+  ${year_substr}
+  ${year}
   ${date_substr}
   ${date}
   ${time}

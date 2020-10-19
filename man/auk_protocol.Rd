@@ -52,6 +52,7 @@ Other filter:
 \code{\link{auk_breeding}()},
 \code{\link{auk_complete}()},
 \code{\link{auk_country}()},
+\code{\link{auk_county}()},
 \code{\link{auk_date}()},
 \code{\link{auk_distance}()},
 \code{\link{auk_duration}()},
@@ -62,6 +63,7 @@ Other filter:
 \code{\link{auk_project}()},
 \code{\link{auk_species}()},
 \code{\link{auk_state}()},
-\code{\link{auk_time}()}
+\code{\link{auk_time}()},
+\code{\link{auk_year}()}
 }
 \concept{filter}

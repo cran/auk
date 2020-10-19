@@ -14,23 +14,122 @@
 
 <title>auk development</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -50,7 +149,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -374,7 +473,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="unit-tests" class="section level3">
 <h3>4. Unit tests</h3>
 <p>Now that you’ve successfully created the filter, play around with it a bit to make sure it works as expected. Once you feel the filter is working, it’s time to formalize this testing process by defining unit tests. Open the file <code>tests/testthat/test_filters.r</code> and you’ll notice a series of calls like <code>test_that(&quot;auk_species&quot;, ...</code>, each of which contains tests for a specific filter.</p>
-<p>Using an existing test block as an example, define a new block (again, put it in the correct order relative to the other filters). Consult the <a href="http://r-pkgs.had.co.nz/tests.html">Testing chapter</a> of Hadley Wickham’s <a href="http://r-pkgs.had.co.nz/">R packages book</a> for details on defining good unit tests. At the very least, define tests to make sure that typical use works as expected, that errors are caught when input is invalid, and that edge cases are correctly handled.</p>
+<p>Using an existing test block as an example, define a new block (again, put it in the correct order relative to the other filters). Consult the <a href="https://r-pkgs.org/tests.html">Testing chapter</a> of Hadley Wickham’s <a href="https://r-pkgs.org/">R packages book</a> for details on defining good unit tests. At the very least, define tests to make sure that typical use works as expected, that errors are caught when input is invalid, and that edge cases are correctly handled.</p>
 </div>
 <div id="update-vignette-and-readme" class="section level3">
 <h3>5. Update vignette and README</h3>
@@ -395,7 +494,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="cran-submission" class="section level2">
 <h2>CRAN submission</h2>
-<p>Minor updates to <code>auk</code> can be pushed to GitHub giving users the option of installing the development version from there. However, at least once a year, when a new eBird taxonomy is released, a new version of <code>auk</code> should be released on CRAN. For full details on this process, consult Hadley Wickham’s <a href="http://r-pkgs.had.co.nz/release.html">R Packages book</a>, however, I’ll provide a quick guide here. Once The package has been updated following the instructions from the above sections:</p>
+<p>Minor updates to <code>auk</code> can be pushed to GitHub giving users the option of installing the development version from there. However, at least once a year, when a new eBird taxonomy is released, a new version of <code>auk</code> should be released on CRAN. For full details on this process, consult Hadley Wickham’s <a href="https://r-pkgs.org/release.html">R Packages book</a>, however, I’ll provide a quick guide here. Once The package has been updated following the instructions from the above sections:</p>
 <ol style="list-style-type: decimal">
 <li>Check the package. Run <code>devtools::check()</code> to run <code>R CMD check</code> locally. Check that a Windows binary can be built by running <code>devtools::build_win()</code>. The results will be emailed to you within about 30 minutes. Also, this package uses continuous integration to automatically check the package on Linux, Mac, and Windows whenever it’s pushed to GitHub. Check the badges at the top of the GitHub repo to ensure the builds are passing. Any NOTEs, ERRORs, or WARNINGs returned by R CMD check must be fixed before submission to CRAN.</li>
 <li>Increment the version number in the <code>DESCRIPTION</code> file.</li>
