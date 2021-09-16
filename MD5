@@ -1,6 +1,6 @@
-76a5448100c6a8f22e877cd92e01ff39 *DESCRIPTION
+389797891a2537988fd6334fbe8eb131 *DESCRIPTION
 8aa479dc0b199af8394a8f153933d9aa *NAMESPACE
-7d14a62c87d9f1e1421480ece871ac07 *NEWS.md
+78163dae3985c4f8883a3cfa987e86ca *NEWS.md
 42db06cafb20756363c1da98db61364f *R/auk-bbox.r
 54449086ae3a5f77913e20f4d11e5634 *R/auk-bcr.r
 9d42b8798c91ffa8830d5ea94117d0c7 *R/auk-breeding.r
@@ -31,7 +31,7 @@ d5d0196f3e43434e1784f883b7071f23 *R/auk-split.r
 8512b73ea3a8c90e14eded163d4f10d0 *R/auk-state.r
 4c0be871b80f668b63fd10b7b509b31e *R/auk-time.r
 fe9651a2a3b42569318199a2cfbe9618 *R/auk-unique.r
-b30c332a7afc4483865bd14b45367450 *R/auk-version.r
+a31d3e18b523be78da0dd49c6c3684f9 *R/auk-version.r
 f6a56bbfb31cba666e59fad06cb33af9 *R/auk-year.r
 384f169e622b7f7d3be25eb40f0a3d89 *R/auk-zerofill.r
 26e4e43f10ad6ae938f2713d6436647b *R/data.r
@@ -43,15 +43,15 @@ edb6310002061b6a454815d49326084f *R/filter-repeat-visits.r
 1481fad552b090218ae4240dc235eb8b *R/read.r
 a3b6b4684abe18389f82e5bd0bd31f76 *R/utils.r
 b52fd682feba699379b77c7881d2e89a *R/zzz.r
-d4181c2f3a788f1d12f857565b4b4458 *build/vignette.rds
+fb714bc0a3117622b52067cb8e71d82e *build/vignette.rds
 eb739de597762996b2d773e998bec11b *data/bcr_codes.rda
 93c1dfa3fe59967a33b38298e632e73b *data/ebird_states.rda
-84a475ed8311581acc1c0c8d922a2fe9 *data/ebird_taxonomy.rda
+21e19a2b66f594b3743e03dfa923ca9b *data/ebird_taxonomy.rda
 5787817bf59f348dd5662641bc875541 *data/valid_protocols.rda
 0cf9146991a7c6939550bf12fc7aab47 *inst/CITATION
 7a032890d32cbd41bbf0f1400bbc0187 *inst/doc/auk.R
 533869d76c2db617f91bd7116d18f901 *inst/doc/auk.Rmd
-6ead2c35e50d93b5c9b7bac125110051 *inst/doc/auk.html
+c33c229a3122b3fc1aefaa2c0e1655b5 *inst/doc/auk.html
 f15f624b091ad4033fe20420765e26fa *inst/doc/development.R
 e4734bcbe640b17123cdc5a27f1611f6 *inst/doc/development.Rmd
 d7c883dbc917d068b041da91f93a6723 *inst/doc/development.html
