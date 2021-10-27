@@ -234,7 +234,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">auk_ebd</span>()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ebd</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Input </span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/ebd-sample.txt </span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/ebd-sample.txt </span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Output </span></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Filters not executed</span></span>
@@ -295,7 +295,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">auk_complete</span>()</span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ebd_filters</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Input </span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/ebd-sample.txt </span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/ebd-sample.txt </span></span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Output </span></span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Filters not executed</span></span>
@@ -332,57 +332,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="reading" class="section level3">
 <h3>Reading</h3>
-<p>eBird Basic Dataset files can be read with <code>read_ebd()</code>. This is a wrapper around <code>data.table::fread()</code>, <code>readr::read_delim()</code>, or <code>read.delim()</code>, depending on which packages are installed. <code>read_ebd()</code> uses <code>stringsAsFactors = FALSE</code>, <code>quote = &quot;&quot;</code>, sets column classes, and converts variable names to <code>snake_case</code>.</p>
+<p>eBird Basic Dataset files can be read with <code>read_ebd()</code>. This is a wrapper around <code>readr::read_delim()</code>. <code>read_ebd()</code> uses <code>stringsAsFactors = FALSE</code>, <code>quote = &quot;&quot;</code>, sets column classes, and converts variable names to <code>snake_case</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">&quot;extdata/ebd-sample.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;auk&quot;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_ebd</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 494</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 45</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ checklist_id                 &lt;chr&gt; &quot;S6852862&quot;, &quot;S14432467&quot;, &quot;S39033556&quot;, &quot;S3…</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ global_unique_identifier     &lt;chr&gt; &quot;URN:CornellLabOfOrnithology:EBIRD:OBS979…</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ last_edited_date             &lt;chr&gt; &quot;2016-02-22 14:59:49&quot;, &quot;2013-06-16 17:34:…</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ taxonomic_order              &lt;dbl&gt; 20145, 20145, 20145, 20145, 20145, 20145,…</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ category                     &lt;chr&gt; &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, &quot;species…</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ common_name                  &lt;chr&gt; &quot;Green Jay&quot;, &quot;Green Jay&quot;, &quot;Green Jay&quot;, &quot;G…</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ scientific_name              &lt;chr&gt; &quot;Cyanocorax yncas&quot;, &quot;Cyanocorax yncas&quot;, &quot;…</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observation_count            &lt;chr&gt; &quot;4&quot;, &quot;2&quot;, &quot;1&quot;, &quot;1&quot;, &quot;2&quot;, &quot;X&quot;, &quot;6&quot;, &quot;3&quot;, &quot;…</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ breeding_bird_atlas_code     &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ breeding_bird_atlas_category &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age_sex                      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ country                      &lt;chr&gt; &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;…</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ country_code                 &lt;chr&gt; &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;,…</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ state                        &lt;chr&gt; &quot;Yucatan&quot;, &quot;Chiapas&quot;, &quot;Chiapas&quot;, &quot;Chiapas…</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ state_code                   &lt;chr&gt; &quot;MX-YUC&quot;, &quot;MX-CHP&quot;, &quot;MX-CHP&quot;, &quot;MX-CHP&quot;, &quot;…</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ county                       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ county_code                  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iba_code                     &lt;chr&gt; NA, NA, NA, NA, &quot;MX_169&quot;, NA, NA, NA, &quot;MX…</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ bcr_code                     &lt;int&gt; 56, 60, 60, 60, 60, 55, 55, 60, 56, 55, 5…</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ usfws_code                   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ atlas_block                  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality                     &lt;chr&gt; &quot;Yuc. Hacienda Chichen&quot;, &quot;Berlin2_Punto_0…</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality_id                  &lt;chr&gt; &quot;L989845&quot;, &quot;L2224225&quot;, &quot;L6247542&quot;, &quot;L6120…</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality_type                &lt;chr&gt; &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;P&quot;, &quot;P&quot;, &quot;…</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ latitude                     &lt;dbl&gt; 20.67682, 15.77522, 15.77360, 15.82947, 1…</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ longitude                    &lt;dbl&gt; -88.56896, -92.96472, -93.00260, -92.9229…</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observation_date             &lt;date&gt; 2010-09-05, 2011-08-18, 2012-02-02, 2011…</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ time_observations_started    &lt;chr&gt; &quot;06:30:00&quot;, &quot;08:00:00&quot;, &quot;09:13:00&quot;, &quot;06:4…</span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observer_id                  &lt;chr&gt; &quot;obsr55719&quot;, &quot;obsr313215&quot;, &quot;obsr313215&quot;, …</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sampling_event_identifier    &lt;chr&gt; &quot;S6852862&quot;, &quot;S14432467&quot;, &quot;S39033556&quot;, &quot;S3…</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ protocol_type                &lt;chr&gt; &quot;Traveling&quot;, &quot;Traveling&quot;, &quot;Stationary&quot;, &quot;…</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ protocol_code                &lt;chr&gt; &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P22&quot;, &quot;P62&quot;,…</span></span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ project_code                 &lt;chr&gt; &quot;EBIRD&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD…</span></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ duration_minutes             &lt;int&gt; 90, 10, 10, 10, 10, 120, 30, 10, 80, 30, …</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ effort_distance_km           &lt;dbl&gt; 1.000, 0.257, NA, NA, 0.257, NA, NA, NA, …</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ effort_area_ha               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ number_observers             &lt;int&gt; 3, 1, 1, 1, 1, 2, 2, 1, 13, 2, 1, 1, 1, 1…</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ all_species_reported         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ group_identifier             &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ has_media                    &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…</span></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ approved                     &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ reviewed                     &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…</span></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ reason                       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ trip_comments                &lt;chr&gt; NA, &quot;Alonso Gomez Hdz Monitoreo Comunitar…</span></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ species_comments             &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span></code></pre></div>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S6852862&quot;, &quot;S14432467&quot;, &quot;S39033556&quot;, &quot;S3830…</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ global_unique_identifier  &lt;chr&gt; &quot;URN:CornellLabOfOrnithology:EBIRD:OBS979359…</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ last_edited_date          &lt;chr&gt; &quot;2016-02-22 14:59:49&quot;, &quot;2013-06-16 17:34:19&quot;…</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ taxonomic_order           &lt;dbl&gt; 20145, 20145, 20145, 20145, 20145, 20145, 20…</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ category                  &lt;chr&gt; &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, …</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ common_name               &lt;chr&gt; &quot;Green Jay&quot;, &quot;Green Jay&quot;, &quot;Green Jay&quot;, &quot;Gree…</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Cyanocorax yncas&quot;, &quot;Cyanocorax yncas&quot;, &quot;Cya…</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;4&quot;, &quot;2&quot;, &quot;1&quot;, &quot;1&quot;, &quot;2&quot;, &quot;X&quot;, &quot;6&quot;, &quot;3&quot;, &quot;3&quot;,…</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ breeding_code             &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ breeding_category         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age_sex                   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ country                   &lt;chr&gt; &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mex…</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ country_code              &lt;chr&gt; &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;M…</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ state                     &lt;chr&gt; &quot;Yucatan&quot;, &quot;Chiapas&quot;, &quot;Chiapas&quot;, &quot;Chiapas&quot;, …</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ state_code                &lt;chr&gt; &quot;MX-YUC&quot;, &quot;MX-CHP&quot;, &quot;MX-CHP&quot;, &quot;MX-CHP&quot;, &quot;MX-…</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ county                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ county_code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iba_code                  &lt;chr&gt; NA, NA, NA, NA, &quot;MX_169&quot;, NA, NA, NA, &quot;MX_17…</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ bcr_code                  &lt;int&gt; 56, 60, 60, 60, 60, 55, 55, 60, 56, 55, 55, …</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ usfws_code                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ atlas_block               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality                  &lt;chr&gt; &quot;Yuc. Hacienda Chichen&quot;, &quot;Berlin2_Punto_06&quot;,…</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality_id               &lt;chr&gt; &quot;L989845&quot;, &quot;L2224225&quot;, &quot;L6247542&quot;, &quot;L6120049…</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ locality_type             &lt;chr&gt; &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;,…</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ latitude                  &lt;dbl&gt; 20.67682, 15.77522, 15.77360, 15.82947, 15.7…</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ longitude                 &lt;dbl&gt; -88.56896, -92.96472, -93.00260, -92.92293, …</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observation_date          &lt;date&gt; 2010-09-05, 2011-08-18, 2012-02-02, 2011-12…</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ time_observations_started &lt;chr&gt; &quot;06:30:00&quot;, &quot;08:00:00&quot;, &quot;09:13:00&quot;, &quot;06:40:0…</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obsr55719&quot;, &quot;obsr313215&quot;, &quot;obsr313215&quot;, &quot;ob…</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S6852862&quot;, &quot;S14432467&quot;, &quot;S39033556&quot;, &quot;S3830…</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ protocol_type             &lt;chr&gt; &quot;Traveling&quot;, &quot;Traveling&quot;, &quot;Stationary&quot;, &quot;Sta…</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ protocol_code             &lt;chr&gt; &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P22&quot;, &quot;P62&quot;, &quot;P…</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ project_code              &lt;chr&gt; &quot;EBIRD&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD&quot;, …</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ duration_minutes          &lt;int&gt; 90, 10, 10, 10, 10, 120, 30, 10, 80, 30, 30,…</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ effort_distance_km        &lt;dbl&gt; 1.000, 0.257, NA, NA, 0.257, NA, NA, NA, 1.2…</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ effort_area_ha            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ number_observers          &lt;int&gt; 3, 1, 1, 1, 1, 2, 2, 1, 13, 2, 1, 1, 1, 1, 1…</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ all_species_reported      &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ has_media                 &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA…</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ approved                  &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ reviewed                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA…</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ reason                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ trip_comments             &lt;chr&gt; NA, &quot;Alonso Gomez Hdz Monitoreo Comunitario,…</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ species_comments          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre></div>
 <p><code>auk_filter()</code> returns an <code>auk_ebd</code> object with the output file paths stored in it. This <code>auk_ebd</code> object can then be passed directly to <code>auk_read()</code>, allowing for a complete pipeline. For example, we can create an <code>auk_ebd</code> object, define filters, filter with AWK, and read in the results all at once.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>output_file <span class="ot">&lt;-</span> <span class="st">&quot;ebd_filtered_blja-grja.txt&quot;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ebd_df <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/ebd-sample.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;auk&quot;</span>) <span class="sc">%&gt;%</span> </span>
@@ -506,8 +506,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">auk_complete</span>()</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>filters</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Input </span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/zerofill-ex_ebd.txt </span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sampling events: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/zerofill-ex_sampling.txt </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/zerofill-ex_ebd.txt </span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sampling events: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/zerofill-ex_sampling.txt </span></span>
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Output </span></span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Filters not executed</span></span>
@@ -535,8 +535,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                                file_sampling = &quot;sampling-filtered.txt&quot;)</span></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>ebd_sed_filtered</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Input </span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/zerofill-ex_ebd.txt </span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sampling events: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpxrzSTz/Rinst7c871e336354/auk/extdata/zerofill-ex_sampling.txt </span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/zerofill-ex_ebd.txt </span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sampling events: /private/var/folders/mg/qh40qmqd7376xn8qxd6hm5lwjyy0h2/T/RtmpO7h3A3/Rinst22f114c07402/auk/extdata/zerofill-ex_sampling.txt </span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Output </span></span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   EBD: ebd-filtered.txt </span></span>
