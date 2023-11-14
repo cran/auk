@@ -102,9 +102,9 @@ auk_rollup <- function(x, taxonomy_version, drop_higher = TRUE) {
   
   # has auk_unique been applied?
   if ("checklist_id" %in% names(x)) {
-    cid <- rlang::as_quosure(~ checklist_id)
+    cid <- "checklist_id"
   } else {
-    cid <- rlang::as_quosure(~ sampling_event_identifier)
+    cid <- "sampling_event_identifier"
   }
   
   # get the correct ebird taxonomy version
@@ -127,7 +127,7 @@ auk_rollup <- function(x, taxonomy_version, drop_higher = TRUE) {
   undesc <- dplyr::filter(tax, .data$category == "form", is.na(.data$report_as))
   tax <- dplyr::filter(tax, .data$category %in% include)
   tax <- rbind(tax, undesc)
-  tax <- dplyr::select(tax, .data$scientific_name, .data$taxon_order)
+  tax <- dplyr::select(tax, "scientific_name", "taxon_order")
   x <- dplyr::inner_join(x, tax, by = "scientific_name")
   
   if (nrow(x) == 0) {
@@ -142,26 +142,29 @@ auk_rollup <- function(x, taxonomy_version, drop_higher = TRUE) {
   }
   
   # summarize species for cases where multiple subspecies reported on same list
-  sp <- dplyr::select(x, !!cid, .data$scientific_name, .data$observation_count)
-  sp <- dplyr::mutate(sp, count = suppressWarnings(
-    as.integer(.data$observation_count)))
-  sp <- dplyr::group_by(sp, !!cid, .data$scientific_name)
-  sp <- dplyr::summarise(sp, count = sum(.data$count))
-  sp <- dplyr::ungroup(sp)
+  sp <- dplyr::select(x, dplyr::all_of(c(cid, "scientific_name", "observation_count")))
+  suppressWarnings({
+    sp$count <- as.integer(sp$observation_count)
+  })
+  sp <- dplyr::group_by(sp, 
+                        dplyr::across(dplyr::all_of(c(cid, "scientific_name"))))
+  sp <- dplyr::summarise(sp, count = sum(.data$count), .groups = "drop")
   sp <- dplyr::mutate(sp,
                       count = as.character(.data$count),
                       count = dplyr::coalesce(.data$count, "X"))
   
   # drop any duplicate species records
-  x <- dplyr::group_by(x, !!cid, .data$scientific_name)
+  x <- dplyr::group_by(x, 
+                       dplyr::across(dplyr::all_of(c(cid, "scientific_name"))))
   # give precedence to true species records
-  x <- dplyr::filter(x, dplyr::row_number(.data$taxon_order) == 1)
+  x <- dplyr::slice_min(x, n = 1, order_by = .data$taxon_order, 
+                        with_ties = FALSE)
   x <- dplyr::ungroup(x)
   
   # update counts with summary
-  x <- dplyr::inner_join(x, sp, by = c(rlang::quo_text(cid), "scientific_name"))
+  x <- dplyr::inner_join(x, sp, by = c(cid, "scientific_name"))
   x <- dplyr::mutate(x, observation_count = .data$count)
-  x <- dplyr::select(x, -.data$count, -.data$taxon_order)
+  x <- dplyr::select(x, -"count", -"taxon_order")
   
   # drop subspecies fields, set category to species
   if ("category" %in% names(x)) {

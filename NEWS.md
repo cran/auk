@@ -1,3 +1,12 @@
+# auk 0.7.0
+
+- update for 2023 eBird taxonomy
+- no need to restart after setting AWK and EBD paths
+- retain breeding codes in `auk_zerofill()`
+- changes to conform with deprecation of `.data$` in tidyselect expressions
+- changes to package-level documentation in roxygen2
+- removed non-ASCII characters from datasets
+
 # auk 0.6.0
 
 - update for 2022 eBird taxonomy

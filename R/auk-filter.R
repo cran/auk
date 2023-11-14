@@ -473,7 +473,11 @@ awk_translate <- function(filters, col_idx, sep, select) {
     filter_strings$date_substr <- sprintf("monthday = substr($%i, 6, 5)", idx)
     # remove the wildcard part of date
     dates <- stringr::str_replace(filters$date, "^\\*-", "")
-    lo_wrap = if (attr(filters$date, "wrap")) "||" else "&&"
+    lo_wrap <- if (attr(filters$date, "wrap")) {
+      "||"
+    } else {
+      "&&" 
+    }
     condition <- str_interp("monthday >= \"${mn}\" ${lo} monthday <= \"${mx}\"",
                             list(mn = dates[1], mx = dates[2],
                                  lo = lo_wrap))
@@ -571,6 +575,15 @@ awk_translate <- function(filters, col_idx, sep, select) {
   } else {
     filter_strings$breeding <- ""
   }
+  # exotic codes
+  if (length(filters$exotic) == 0) {
+    filter_strings$exotic <- ""
+  } else {
+    idx <- col_idx$index[col_idx$id == "exotic"]
+    condition <- paste0("$", idx, " == \"", filters$exotic, "\"",
+                        collapse = " || ")
+    filter_strings$exotic <- str_interp(awk_if, list(condition = condition))
+  }
   # complete checklists only
   if (filters$complete) {
     idx <- col_idx$index[col_idx$id == "complete"]
@@ -633,6 +646,7 @@ BEGIN {
   ${duration}
   ${distance}
   ${breeding}
+  ${exotic}
   ${complete}
   ${observer}
 
