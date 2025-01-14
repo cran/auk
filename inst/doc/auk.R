@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -8,42 +8,42 @@ suppressPackageStartupMessages(library(auk))
 suppressPackageStartupMessages(library(dplyr))
 
 ## ----quickstart, eval = FALSE-------------------------------------------------
-#  library(auk)
-#  # path to the ebird data file, here a sample included in the package
-#  # in practice, provide path to ebd, e.g. input_file <- "data/ebd_relFeb-2018.txt"
-#  input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
-#  # output text file
-#  output_file <- "ebd_filtered_grja.txt"
-#  ebird_data <- input_file %>%
-#    # 1. reference file
-#    auk_ebd() %>%
-#    # 2. define filters
-#    auk_species(species = "Canada Jay") %>%
-#    auk_country(country = "Canada") %>%
-#    # 3. run filtering
-#    auk_filter(file = output_file) %>%
-#    # 4. read text file into r data frame
-#    read_ebd()
+# library(auk)
+# # path to the ebird data file, here a sample included in the package
+# # in practice, provide path to ebd, e.g. input_file <- "data/ebd_relFeb-2018.txt"
+# input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
+# # output text file
+# output_file <- "ebd_filtered_grja.txt"
+# ebird_data <- input_file %>%
+#   # 1. reference file
+#   auk_ebd() %>%
+#   # 2. define filters
+#   auk_species(species = "Canada Jay") %>%
+#   auk_country(country = "Canada") %>%
+#   # 3. run filtering
+#   auk_filter(file = output_file) %>%
+#   # 4. read text file into r data frame
+#   read_ebd()
 
 ## ----quickstart-nopipes, eval = FALSE-----------------------------------------
-#  input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
-#  output_file <- "ebd_filtered_grja.txt"
-#  ebd <- auk_ebd(input_file)
-#  ebd_filters <- auk_species(ebd, species = "Canada Jay")
-#  ebd_filters <- auk_country(ebd_filters, country = "Canada")
-#  ebd_filtered <- auk_filter(ebd_filters, file = output_file)
-#  ebd_df <- read_ebd(ebd_filtered)
+# input_file <- system.file("extdata/ebd-sample.txt", package = "auk")
+# output_file <- "ebd_filtered_grja.txt"
+# ebd <- auk_ebd(input_file)
+# ebd_filters <- auk_species(ebd, species = "Canada Jay")
+# ebd_filters <- auk_country(ebd_filters, country = "Canada")
+# ebd_filtered <- auk_filter(ebd_filters, file = output_file)
+# ebd_df <- read_ebd(ebd_filtered)
 
 ## ----example-data-1, eval = FALSE---------------------------------------------
-#  library(auk)
-#  library(dplyr)
-#  system.file("extdata/ebd-sample.txt", package = "auk")
+# library(auk)
+# library(dplyr)
+# system.file("extdata/ebd-sample.txt", package = "auk")
 
 ## ----example-data-2, eval = FALSE---------------------------------------------
-#  # ebd
-#  system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
-#  # sampling event data
-#  system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
+# # ebd
+# system.file("extdata/zerofill-ex_ebd.txt", package = "auk")
+# # sampling event data
+# system.file("extdata/zerofill-ex_sampling.txt", package = "auk")
 
 ## ----auk-ebd------------------------------------------------------------------
 ebd <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 
@@ -70,12 +70,12 @@ ebd_filters <- ebd %>%
 ebd_filters
 
 ## ----auk-complete, eval = FALSE-----------------------------------------------
-#  output_file <- "ebd_filtered_blja-grja.txt"
-#  ebd_jays <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
-#    auk_ebd() %>%
-#    auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
-#    auk_country(country = "Canada") %>%
-#    auk_filter(file = output_file)
+# output_file <- "ebd_filtered_blja-grja.txt"
+# ebd_jays <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+#   auk_ebd() %>%
+#   auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
+#   auk_country(country = "Canada") %>%
+#   auk_filter(file = output_file)
 
 ## ----read---------------------------------------------------------------------
 system.file("extdata/ebd-sample.txt", package = "auk") %>% 
@@ -83,13 +83,13 @@ system.file("extdata/ebd-sample.txt", package = "auk") %>%
   glimpse()
 
 ## ----read-auk-ebd, eval = FALSE-----------------------------------------------
-#  output_file <- "ebd_filtered_blja-grja.txt"
-#  ebd_df <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
-#    auk_ebd() %>%
-#    auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
-#    auk_country(country = "Canada") %>%
-#    auk_filter(file = output_file) %>%
-#    read_ebd()
+# output_file <- "ebd_filtered_blja-grja.txt"
+# ebd_df <- system.file("extdata/ebd-sample.txt", package = "auk") %>%
+#   auk_ebd() %>%
+#   auk_species(species = c("Canada Jay", "Cyanocitta cristata")) %>%
+#   auk_country(country = "Canada") %>%
+#   auk_filter(file = output_file) %>%
+#   read_ebd()
 
 ## ----awk-script---------------------------------------------------------------
 awk_script <- system.file("extdata/ebd-sample.txt", package = "auk") %>% 

@@ -1,6 +1,6 @@
 Package: auk
 Title: eBird Data Extraction and Processing in R
-Version: 0.7.0
+Version: 0.8.0
 Authors@R: 
     c(person(given = "Matthew",
              family = "Strimas-Mackey",
@@ -35,9 +35,9 @@ Suggests: covr, knitr, rmarkdown, sf, testthat, unmarked, withr
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2023-11-13 22:32:25 UTC; mes335
+Packaged: 2025-01-14 19:30:05 UTC; mes335
 Author: Matthew Strimas-Mackey [aut, cre]
     (<https://orcid.org/0000-0001-8929-7776>),
   Eliot Miller [aut],
@@ -45,4 +45,4 @@ Author: Matthew Strimas-Mackey [aut, cre]
   Cornell Lab of Ornithology [cph]
 Maintainer: Matthew Strimas-Mackey <mes335@cornell.edu>
 Repository: CRAN
-Date/Publication: 2023-11-14 09:43:22 UTC
+Date/Publication: 2025-01-14 19:40:02 UTC

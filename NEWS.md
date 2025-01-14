@@ -1,3 +1,8 @@
+# auk 0.8.0
+
+- update for 2024 taxonomy
+- added a helper function for processing bar chart data from eBird `process_barcharts()`
+
 # auk 0.7.0
 
 - update for 2023 eBird taxonomy
