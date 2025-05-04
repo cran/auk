@@ -1,3 +1,8 @@
+# auk 0.8.1
+
+- allow `ebird_species()` to search for species codes in addition to scientific and common names
+- handle changes to EBD column names resulting from release of eBird Projects (issue #91)
+
 # auk 0.8.0
 
 - update for 2024 taxonomy
