@@ -4,15 +4,11 @@
 \alias{auk_rollup}
 \title{Roll up eBird taxonomy to species}
 \usage{
-auk_rollup(x, taxonomy_version, drop_higher = TRUE)
+auk_rollup(x, drop_higher = TRUE)
 }
 \arguments{
 \item{x}{data.frame; data frame of eBird data, typically as imported by
 \code{\link[=read_ebd]{read_ebd()}}}
-
-\item{taxonomy_version}{integer; the version (i.e. year) of the taxonomy. In
-most cases, this should be left empty to use the version of the taxonomy
-included in the package. See \code{\link[=get_ebird_taxonomy]{get_ebird_taxonomy()}}.}
 
 \item{drop_higher}{logical; whether to remove taxa above species during the
 rollup process, e.g. "spuhs" like "duck sp.".}
@@ -90,7 +86,7 @@ unique(ebd_higher$category)
 
 # yellow-rump warbler subspecies rollup
 library(dplyr)
-# without rollup, there are three observations
+# without rollup, there are multiple observations per checklists
 ebd |>
   filter(common_name == "Yellow-rumped Warbler") |>
   select(checklist_id, category, common_name, subspecies_common_name, 
